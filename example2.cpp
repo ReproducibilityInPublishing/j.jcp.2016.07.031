@@ -1,4 +1,3 @@
-/*
 #include <iostream>
 #include "FAI_2DFSDEsolver.h"
 #include"gamma.h"
@@ -6,12 +5,12 @@
 #include <iomanip> 
 #define PI  3.1415926535897932384626433832
 const uint_32 level=9;
-const uint_32 N=4;
-const double X_L=0,X_R=0.5,Y_Low=0,Y_Upp=0.5,T=1,alpha=1.0/3.0;
+const uint_32 N=32;
+const double X_L=0,X_R=0.5,Y_Low=-1,Y_Upp=1,T=0.5,alpha=1.0/6.0;
 const double eps=0.5e-8;
 const double tol=1.0e-8;
 double inf_norm_real(double* vec,uint_32 veclen);
-double averageiter(uint_32* vec,uint_32 veclen);
+double averageiter(double* vec,uint_32 veclen);
 int main()
 {
    uint_32 M,i,j,Ms;
@@ -113,7 +112,7 @@ int main()
 	delete[]expxy;
 
 
-   uint_32* iter_num_arr=new uint_32[N];
+   double* iter_num_arr=new double[N];
 
    Time_frac_diffusion_2Deq_solver(N,level,X_L,X_R,Y_Low,Y_Upp,Frac_div_appro_coeff,rhs,eps,iter_num_arr,tol);
     t2=clock();
@@ -141,12 +140,12 @@ int main()
   std::cout.setf(std::ios::fixed);
  std::cout<<std::setprecision(7)<<"the running time is :"<<s<<std::endl;
 
-/ *
+/*
  for (i=0;i<Ms;i++)
  {
 	 std::cout<<exactsol[i]*pow(T,onepalpha)-rhs[N-1][i].r<<std::endl;
  }
-* /
+*/
 
 
    delete[]exactsol;
@@ -168,7 +167,7 @@ double inf_norm_real(double* vec,uint_32 veclen)
 	}
 	return max;
 }
-double averageiter(uint_32* vec,uint_32 veclen)
+double averageiter(double* vec,uint_32 veclen)
 {
 	double average=vec[0];
 	for (uint_32 i=1;i<veclen;i++)
@@ -176,4 +175,4 @@ double averageiter(uint_32* vec,uint_32 veclen)
 		average+=vec[i];
 	}
 	return average/(double)veclen;
-}*/
+}

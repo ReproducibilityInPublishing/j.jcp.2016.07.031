@@ -32,10 +32,19 @@ void Restr_Operator(complex* rh,complex* f2h,uint_32 M);
 void Interp_Operator(complex*u2h,complex*uh,uint_32 M);
 void tracking(double* offlaplacex,complex* mainlaplace ,complex* x,complex* b,uint_32 size);
 void AXLGS_smoother(double* offlaplacex,double* offlaplacey,complex* mainlaplace,complex* initialgs,complex* rhs,uint_32 M,uint_32 time,bool iszeroinitial);
+double _Pow_int(double x, int n);
 /*.....................................................*/
 
 
 /*definition of functions*/
+double _Pow_int(double x, int n) {
+	double answer = 1.;
+	for (int i=0; i<n; ++i) {
+		answer *= x;
+	}
+	return answer;
+}
+
 void Time_frac_diffusion_2Deq_solver(uint_32 N,uint_32 level,double X_L,double X_R,double Y_Low,\
 										  double Y_Upp,double* Frac_div_appro_coeff,complex** rhs,double eps,double iter_num_arr[1],double tol)
 {
