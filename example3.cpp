@@ -3,62 +3,88 @@
 #include"gamma.h"
 #include <time.h>
 #include <iomanip>
+#define PI  3.1415926535897932384626433832
+
+// Some problem parameters
 const uint_32 level=9;
 const uint_32 N=64;
 const double X_L=-1, X_R=1, Y_Low=-1, Y_Upp=1, T=0.5, alpha=1./6.;
 const double eps=0.5e-8;
 const double tol=1.0e-8;
+
 double inf_norm_real(double* vec, uint_32 veclen);
+double averageiter(double* vec, uint_32 veclen);
+
 int main() {
-	uint_32 M, i, j, Ms;
+	// Some variable initialization
+	uint_32 i, j;
 	clock_t t1, t2;
 	double s;
-	t1=clock();
-	M=_Pow_int(2, level)-1;
-	Ms=M*M;
-	double tau=T/(double)N, miu, oneovermiu;
-	miu=pow(tau, alpha)*Gamma(2-alpha);
-	double h1, h2;
-	h1=(X_R-X_L)/(double)(M+1);
-	h2=(Y_Upp-Y_Low)/(double)(M+1);
-	oneovermiu=1.0/miu;
-	double onema=1-alpha, apkp1, apk;
-	double* ak=new double[N];
-	apk=0;
-	apkp1=1;
 
+	// Start clock
+	t1=clock();
+
+	// Set the inner spacial grid resolution.
+	uint_32 M=_Pow_int(2, level)-1;
+	uint_32 Ms=M*M;
+
+	// Set the inner spacial grid resolution.
+	double tau=T/(double)N
+	double h1 = (X_R-X_L)/(double)(M+1);
+	double h2 = (Y_Upp-Y_Low)/(double)(M+1);
+
+	// Computing fractional derivative coefficients
+	double miu = pow(tau, alpha)*Gamma(2-alpha);
+	double oneovermiu = 1.0/miu;
+	double onema=1-alpha;
+	double apkp1 = 1;
+	double apk = 0;
+	double* ak=new double[N];
 	for(i=0; i<N; i++) {
 		ak[i]=apkp1-apk;
 		apk=apkp1;
 		apkp1=pow(i+2, onema);
 	}
-
 	double* Frac_div_appro_coeff=new double[N];
 	Frac_div_appro_coeff[0]=oneovermiu;
-
 	for (i=1; i<N; i++) {
 		Frac_div_appro_coeff[i]=oneovermiu*(ak[i]-ak[i-1]);
 	}
-
 	delete[]ak;
+
 	complex** rhs=new complex*[N];
+
 	double fovergama4ma=Gamma(4)/Gamma(4-alpha);
-	double t, *xarry=new double[M], *yarray=new double[Ms];
+	double t;
+	double* xarry=new double[M];
+	double* yarray=new double[M];
 	double* exactsol=new double[Ms];
-	double mh1, mh2, tmalpha=3-alpha, oneoverh1s=1/(h1*h1), oneoverh2s=1/(h2*h2),
-	                 tq, tp3ma;
-	double x_s=X_L+0.5*h1, x_e=X_L+(M+0.5)*h1, y_s=Y_Low+0.5*h2,
-	       y_e=Y_Low+(M+0.5)*h2;
-	double oneoh1sxl=oneoverh1s*X_L, oneoh1sxr=oneoverh1s*X_R,
-	       oneoh2syl=oneoverh2s*Y_Low, oneoh2syu=oneoverh2s*Y_Upp;
-	uint_32 Mm1=M-1, Mmmm1=Mm1*M;
+
+	double mh1;
+	double mh2;
+	double tmalpha=3-alpha;
+	double tq;
+	double tp3ma;
+	double oneoverh1s=1/(h1*h1);
+	double oneoverh2s=1/(h2*h2);
+	double x_s=X_L+0.5*h1;
+	double x_e=X_L+(M+0.5)*h1;
+	double y_s=Y_Low+0.5*h2;
+	double y_e=Y_Low+(M+0.5)*h2;
+	double oneoh1sxl=oneoverh1s*X_L;
+	double oneoh1sxr=oneoverh1s*X_R;
+	double oneoh2syl=oneoverh2s*Y_Low;
+	double oneoh2syu=oneoverh2s*Y_Upp;
+	uint_32 Mm1=M-1;
+	uint_32 Mmmm1=Mm1*M;
 
 	for (i=0; i<M; i++) {
 		xarry[i]=X_L+(i+1)*h1;
 		yarray[i]=Y_Low+(i+1)*h2;
 	}
 
-	uint_32 indy, n;
+	uint_32 indy;
+	uint_32 n;
 
 	for (j=0; j<M; j++) {
 		indy=j*M;
@@ -80,9 +106,11 @@ int main() {
 	}
 
 	for (n=0; n<N; n++) {
+		// t != 0 for first step??
 		t=(n+1)*tau;
 		tq=t*t*t;
 		tp3ma=pow(t, tmalpha);
+
 		rhs[n]=new complex[Ms];
 
 		for (j=0; j<M; j++) {
@@ -160,4 +188,13 @@ double inf_norm_real(double* vec, uint_32 veclen) {
 	}
 
 	return max;
+}
+double averageiter(double* vec, uint_32 veclen) {
+	double average=vec[0];
+
+	for (uint_32 i=1; i<veclen; i++) {
+		average+=vec[i];
+	}
+
+	return average/(double)veclen;
 }

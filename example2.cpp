@@ -4,14 +4,17 @@
 #include <time.h>
 #include <iomanip>
 #define PI  3.1415926535897932384626433832
+
 // Some problem parameters
 const uint_32 level=2;
 const uint_32 N=15000;
 const double X_L=-1, X_R=1, Y_Low=-1, Y_Upp=1, T=0.5, alpha=0.01;
 const double eps=0.5e-8;
 const double tol=1.0e-8;
+
 double inf_norm_real(double* vec, uint_32 veclen);
 double averageiter(double* vec, uint_32 veclen);
+
 int main() {
 	// Some variable initialization
 	uint_32 i, j;
@@ -38,41 +41,56 @@ int main() {
 	double* ak=new double[N];
 	apk=0;
 	apkp1=1;
-
 	for(i=0; i<N; i++) {
 		ak[i]=apkp1-apk;
 		apk=apkp1;
 		apkp1=pow(i+2, onema);
 	}
-
 	double* Frac_div_appro_coeff=new double[N];
 	Frac_div_appro_coeff[0]=oneovermiu;
-
 	for (i=1; i<N; i++) {
 		Frac_div_appro_coeff[i]=oneovermiu*(ak[i]-ak[i-1]);
 	}
-
 	delete[]ak;
+
 	complex** rhs=new complex*[N];
+
 	double fovergmfma=Gamma(4)/Gamma(4-alpha);
-	double t, *expx=new double[M], *expy=new double[M];
+	double t;
+	double* expx=new double[M];
+	double* expy=new double[M];
 	double* exactsol=new double[Ms];
-	double mh1, mh2, tmalpha=3-alpha, tq, tptma, oneoverh1s=1/(h1*h1),
-	                 oneoverh2s=1/(h2*h2);
-	double x_s=X_L+0.5*h1, x_e=X_L+(M+0.5)*h1, y_s=Y_Low+0.5*h2,
-	       y_e=Y_Low+(M+0.5)*h2;
-	double expxl=exp(X_L), expxr=exp(X_R), expyl=exp(Y_Low), expyu=exp(Y_Upp);
-	double oneoh1sxl=oneoverh1s*expxl, oneoh1sxr=oneoverh1s*expxr,
-	       oneoh2syl=oneoverh2s*expyl, oneoh2syu=oneoverh2s*expyu;
+
+	double mh1;
+	double mh2;
+	double tmalpha=3-alpha;
+	double tq;
+	double tptma;
+	double oneoverh1s=1/(h1*h1);
+	double oneoverh2s=1/(h2*h2);
+	double x_s=X_L+0.5*h1;
+	double x_e=X_L+(M+0.5)*h1;
+	double y_s=Y_Low+0.5*h2;
+	double y_e=Y_Low+(M+0.5)*h2;
+	double expxl=exp(X_L);
+	double expxr=exp(X_R);
+	double expyl=exp(Y_Low);
+	double expyu=exp(Y_Upp);
+	double oneoh1sxl=oneoverh1s*expxl;
+	double oneoh1sxr=oneoverh1s*expxr;
+	double oneoh2syl=oneoverh2s*expyl;
+	double oneoh2syu=oneoverh2s*expyu;
 	double fovemtptma;
-	uint_32 Mm1=M-1, Mmmm1=Mm1*M;
+	uint_32 Mm1=M-1;
+	uint_32 Mmmm1=Mm1*M;
 
 	for (i=0; i<M; i++) {
 		expx[i]=exp(X_L+(i+1)*h1);
 		expy[i]=exp(Y_Low+(i+1)*h2);
 	}
 
-	uint_32 indy, n;
+	uint_32 indy;
+	uint_32 n;
 
 	for (j=0; j<M; j++) {
 		indy=j*M;
@@ -84,6 +102,7 @@ int main() {
 
 	delete[]expx;
 	delete[]expy;
+
 	double* expxy=new double[Ms];
 
 	for (j=0; j<M; j++) {
