@@ -1,0 +1,23 @@
+--- Work Log ---
+
+00:00 Start work
+
+Reading paper and background to understand what the paper is trying to do.
+
+00:37 First pass through theory section of article complete, Very basic understanding
+
+55:00 First pass through implementation section, Very basic understanding
+
+--- Notes ---
+
+AIM: Appoximate Inversion Method
+
+Numerically solving these types of problems is challenging due to the large matrix size and enormous numbers of operations. People are trying to speed this up with things such as AIM.
+
+Previous work on AIM was in one dimension where solutions were fairly simple. This paper extends this to two dimensions by using a block multigrid method to solve the now complex block matrices. (AIMGM)
+
+It appears we have code for example 2 only. I don't know what example 3 was meant to be, but there is no example 3 in the paper and the initial conditions seem mirror those in 'example 2'.
+
+The problem is that the answers I'm getting with the given example 2 aren't quite right. I will now go through the program and verify that everything looks like what was described in the paper.
+
+While not discussed in the paper at first, M denotes the internal spacial resolution. The spatial grid goes from 0 <= i <= M+1 for both the x coordinate and the y coordinate. This makes for M^2 internal spatial points. Because they are solving a 'boundary value problem', the edge coordinates are not part of the calculation of the next time step.
