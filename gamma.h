@@ -9,23 +9,23 @@
             2008.03.17 gamma distribution functions added
 ----------------------------------------------------------------------*/
 #ifndef _ISOC99_SOURCE
-#define _ISOC99_SOURCE
+	#define _ISOC99_SOURCE
 #endif                          /* needed for function log1p() */
 #if defined(GAMMA_MAIN) \
- || defined(GAMMAPDF_MAIN) \
- || defined(GAMMACDF_MAIN) \
- || defined(GAMMAQTL_MAIN)
-#include <stdio.h>
-#include <stdlib.h>
+	|| defined(GAMMAPDF_MAIN) \
+	|| defined(GAMMACDF_MAIN) \
+	|| defined(GAMMAQTL_MAIN)
+	#include <stdio.h>
+	#include <stdlib.h>
 #endif
 #if defined(GAMMAQTL_MAIN) && !defined(GAMMAQTL)
-#define GAMMAQTL
+	#define GAMMAQTL
 #endif
 #include <assert.h>
 #include <float.h>
 #include <math.h>
 #ifdef GAMMAQTL
-#include "normal.h"
+	#include "normal.h"
 #endif
 
 /*----------------------------------------------------------------------
@@ -35,7 +35,7 @@
 #define SQRT_PI      1.77245385090551602729816748334  /* \sqrt(\pi) */
 #define LN_PI        1.14472988584940017414342735135  /* \ln(\pi) */
 #define LN_SQRT_2PI  0.918938533204672741780329736406
-                                                  /* \ln(\sqrt(2\pi)) */
+/* \ln(\sqrt(2\pi)) */
 #define EPSILON      2.2204460492503131e-16
 #define EPS_QTL      1.4901161193847656e-08
 #define MAXFACT      170
@@ -54,74 +54,90 @@ static double _loghs[MAXFACT+1];
   Functions
 ----------------------------------------------------------------------*/
 
-static void _init (void)
-{                               /* --- init. factorial tables */
-  int    i;                     /* loop variable */
-  double x = 1;                 /* factorial */
+static void _init (void) {
+	/* --- init. factorial tables */
+	int    i;                     /* loop variable */
+	double x = 1;                 /* factorial */
+	_facts[0] = _facts[1] = 1;    /* store factorials for 0 and 1 */
+	_logfs[0] = _logfs[1] = 0;    /* and their logarithms */
 
-  _facts[0] = _facts[1] = 1;    /* store factorials for 0 and 1 */
-  _logfs[0] = _logfs[1] = 0;    /* and their logarithms */
-  for (i = 1; ++i <= MAXFACT; ) {
-    _facts[i] = x *= i;         /* initialize the factorial table */
-    _logfs[i] = log(x);         /* and the table of their logarithms */
-  }
-  _halfs[0] = x = SQRT_PI;      /* store Gamma(0.5) */
-  _loghs[0] = 0.5*LN_PI;        /* and its logarithm */
-  for (i = 0; ++i < MAXFACT; ) {
-    _halfs[i] = x *= i-0.5;     /* initialize the table for */
-    _loghs[i] = log(x);         /* the Gamma function of half numbers */
-  }                             /* and the table of their logarithms */
+	for (i = 1; ++i <= MAXFACT; ) {
+		_facts[i] = x *= i;         /* initialize the factorial table */
+		_logfs[i] = log(x);         /* and the table of their logarithms */
+	}
+
+	_halfs[0] = x = SQRT_PI;      /* store Gamma(0.5) */
+	_loghs[0] = 0.5*LN_PI;        /* and its logarithm */
+
+	for (i = 0; ++i < MAXFACT; ) {
+		_halfs[i] = x *= i-0.5;     /* initialize the table for */
+		_loghs[i] = log(x);         /* the Gamma function of half numbers */
+	}                             /* and the table of their logarithms */
 }  /* _init() */
 
 /*--------------------------------------------------------------------*/
 #if 0
 
-double logGamma (double n)
-{                               /* --- compute ln(Gamma(n))         */
-  double s;                     /*           = ln((n-1)!), n \in IN */
+double logGamma (double n) {
+	/* --- compute ln(Gamma(n))         */
+	double s;                     /*           = ln((n-1)!), n \in IN */
+	assert(n > 0);                /* check the function argument */
 
-  assert(n > 0);                /* check the function argument */
-  if (_facts[0] <= 0) _init();  /* initialize the tables */
-  if (n < MAXFACT +1 +4 *EPSILON) {
-    if (fabs(  n -floor(  n)) < 4 *EPSILON)
-      return _logfs[(int)floor(n)-1];
-    if (fabs(2*n -floor(2*n)) < 4 *EPSILON)
-      return _loghs[(int)floor(n)];
-  }                             /* try to get the value from a table */
-  s =  1.000000000190015        /* otherwise compute it */
-    + 76.18009172947146      /(n+1)
-    - 86.50532032941677      /(n+2)
-    + 24.01409824083091      /(n+3)
-    -  1.231739572450155     /(n+4)
-    +  0.1208650972866179e-2 /(n+5)
-    -  0.5395239384953e-5    /(n+6);
-  return (n+0.5) *log((n+5.5)/LN_BASE) +(LN_SQRT_2PI +log(s/n) -5.0);
+	if (_facts[0] <= 0) {
+		_init();    /* initialize the tables */
+	}
+
+	if (n < MAXFACT +1 +4 *EPSILON) {
+		if (fabs(  n -floor(  n)) < 4 *EPSILON) {
+			return _logfs[(int)floor(n)-1];
+		}
+
+		if (fabs(2*n -floor(2*n)) < 4 *EPSILON) {
+			return _loghs[(int)floor(n)];
+		}
+	}                             /* try to get the value from a table */
+
+	s =  1.000000000190015        /* otherwise compute it */
+	     + 76.18009172947146      /(n+1)
+	     - 86.50532032941677      /(n+2)
+	     + 24.01409824083091      /(n+3)
+	     -  1.231739572450155     /(n+4)
+	     +  0.1208650972866179e-2 /(n+5)
+	     -  0.5395239384953e-5    /(n+6);
+	return (n+0.5) *log((n+5.5)/LN_BASE) +(LN_SQRT_2PI +log(s/n) -5.0);
 }  /* logGamma() */
 
 #else /*--------------------------------------------------------------*/
 
-double logGamma (double n)
-{                               /* --- compute ln(Gamma(n))         */
-  double s;                     /*           = ln((n-1)!), n \in IN */
+double logGamma (double n) {
+	/* --- compute ln(Gamma(n))         */
+	double s;                     /*           = ln((n-1)!), n \in IN */
+	assert(n > 0);                /* check the function argument */
 
-  assert(n > 0);                /* check the function argument */
-  if (_facts[0] <= 0) _init();  /* initialize the tables */
-  if (n < MAXFACT +1 +4 *EPSILON) {
-    if (fabs(  n -floor(  n)) < 4 *EPSILON)
-      return _logfs[(int)floor(n)-1];
-    if (fabs(2*n -floor(2*n)) < 4 *EPSILON)
-      return _loghs[(int)floor(n)];
-  }                             /* try to get the value from a table */
-  s =    0.99999999999980993227684700473478  /* otherwise compute it */
-    +  676.520368121885098567009190444019 /(n+1)
-    - 1259.13921672240287047156078755283  /(n+2)
-    +  771.3234287776530788486528258894   /(n+3)
-    -  176.61502916214059906584551354     /(n+4)
-    +   12.507343278686904814458936853    /(n+5)
-    -    0.13857109526572011689554707     /(n+6)
-    +    9.984369578019570859563e-6       /(n+7)
-    +    1.50563273514931155834e-7        /(n+8);
-  return (n+0.5) *log((n+7.5)/LN_BASE) +(LN_SQRT_2PI +log(s/n) -7.0);
+	if (_facts[0] <= 0) {
+		_init();    /* initialize the tables */
+	}
+
+	if (n < MAXFACT +1 +4 *EPSILON) {
+		if (fabs(  n -floor(  n)) < 4 *EPSILON) {
+			return _logfs[(int)floor(n)-1];
+		}
+
+		if (fabs(2*n -floor(2*n)) < 4 *EPSILON) {
+			return _loghs[(int)floor(n)];
+		}
+	}                             /* try to get the value from a table */
+
+	s =    0.99999999999980993227684700473478  /* otherwise compute it */
+	       +  676.520368121885098567009190444019 /(n+1)
+	       - 1259.13921672240287047156078755283  /(n+2)
+	       +  771.3234287776530788486528258894   /(n+3)
+	       -  176.61502916214059906584551354     /(n+4)
+	       +   12.507343278686904814458936853    /(n+5)
+	       -    0.13857109526572011689554707     /(n+6)
+	       +    9.984369578019570859563e-6       /(n+7)
+	       +    1.50563273514931155834e-7        /(n+8);
+	return (n+0.5) *log((n+7.5)/LN_BASE) +(LN_SQRT_2PI +log(s/n) -7.0);
 }  /* logGamma() */
 
 #endif
@@ -146,32 +162,44 @@ For the choices gamma = 7, k = 8, and c_0 to c_8 as defined
 in the second version, the value is slightly more accurate.
 ----------------------------------------------------------------------*/
 
-double Gamma (double n)
-{                               /* --- compute Gamma(n) = (n-1)! */
-  assert(n > 0);                /* check the function argument */
-  if (_facts[0] <= 0) _init();  /* initialize the tables */
-  if (n < MAXFACT +1 +4 *EPSILON) {
-    if (fabs(  n -floor(  n)) < 4 *EPSILON)
-      return _facts[(int)floor(n)-1];
-    if (fabs(2*n -floor(2*n)) < 4 *EPSILON)
-      return _halfs[(int)floor(n)];
-  }                             /* try to get the value from a table */
-  return exp(logGamma(n));      /* compute through natural logarithm */
+double Gamma (double n) {
+	/* --- compute Gamma(n) = (n-1)! */
+	assert(n > 0);                /* check the function argument */
+
+	if (_facts[0] <= 0) {
+		_init();    /* initialize the tables */
+	}
+
+	if (n < MAXFACT +1 +4 *EPSILON) {
+		if (fabs(  n -floor(  n)) < 4 *EPSILON) {
+			return _facts[(int)floor(n)-1];
+		}
+
+		if (fabs(2*n -floor(2*n)) < 4 *EPSILON) {
+			return _halfs[(int)floor(n)];
+		}
+	}                             /* try to get the value from a table */
+
+	return exp(logGamma(n));      /* compute through natural logarithm */
 }  /* Gamma() */
 
 /*--------------------------------------------------------------------*/
 
-static double _series (double n, double x)
-{                               /* --- series approximation */
-  int    i;                     /* loop variable */
-  double t, sum;                /* buffers */
+static double _series (double n, double x) {
+	/* --- series approximation */
+	int    i;                     /* loop variable */
+	double t, sum;                /* buffers */
+	sum = t = 1/n;                /* compute initial values */
 
-  sum = t = 1/n;                /* compute initial values */
-  for (i = MAXITER; --i >= 0; ) {
-    sum += t *= x/++n;          /* add one term of the series */
-    if (fabs(t) < fabs(sum) *EPSILON) break;
-  }                             /* if term is small enough, abort */
-  return sum;                   /* return the computed factor */
+	for (i = MAXITER; --i >= 0; ) {
+		sum += t *= x/++n;          /* add one term of the series */
+
+		if (fabs(t) < fabs(sum) *EPSILON) {
+			break;
+		}
+	}                             /* if term is small enough, abort */
+
+	return sum;                   /* return the computed factor */
 }  /* _series() */
 
 /*----------------------------------------------------------------------
@@ -187,22 +215,37 @@ Source: W.H. Press, S.A. Teukolsky, W.T. Vetterling, and B.P. Flannery
 The factor exp(n *log(x) -x) is added in the functions below.
 ----------------------------------------------------------------------*/
 
-static double _cfrac (double n, double x)
-{                               /* --- continued fraction approx. */
-  int    i;                     /* loop variable */
-  double a, b, c, d, e, f;      /* buffers */
+static double _cfrac (double n, double x) {
+	/* --- continued fraction approx. */
+	int    i;                     /* loop variable */
+	double a, b, c, d, e, f;      /* buffers */
+	b = x+1-n;
+	c = 1/TINY;
+	f = d = 1/b;
 
-  b = x+1-n; c = 1/TINY; f = d = 1/b;
-  for (i = 1; i < MAXITER; i++) {
-    a = i*(n-i);                /* use Lentz's algorithm to compute */
-    d = a *d +(b += 2);         /* consecutive approximations */
-    if (fabs(d) < TINY) d = TINY;
-    c = b +a/c;
-    if (fabs(c) < TINY) c = TINY;
-    d = 1/d; f *= e = d *c;
-    if (fabs(e-1) < EPSILON) break;
-  }                             /* if factor is small enough, abort */
-  return f;                     /* return the computed factor */
+	for (i = 1; i < MAXITER; i++) {
+		a = i*(n-i);                /* use Lentz's algorithm to compute */
+		d = a *d +(b += 2);         /* consecutive approximations */
+
+		if (fabs(d) < TINY) {
+			d = TINY;
+		}
+
+		c = b +a/c;
+
+		if (fabs(c) < TINY) {
+			c = TINY;
+		}
+
+		d = 1/d;
+		f *= e = d *c;
+
+		if (fabs(e-1) < EPSILON) {
+			break;
+		}
+	}                             /* if factor is small enough, abort */
+
+	return f;                     /* return the computed factor */
 }  /* _cfrac() */
 
 /*----------------------------------------------------------------------
@@ -219,38 +262,52 @@ Source: W.H. Press, S.A. Teukolsky, W.T. Vetterling, and B.P. Flannery
 The factor exp(n *log(x) -x) is added in the functions below.
 ----------------------------------------------------------------------*/
 
-double lowerGamma (double n, double x)
-{                               /* --- lower incomplete Gamma fn. */
-  assert((n > 0) && (x > 0));   /* check the function arguments */
-  return _series(n, x) *exp(n *log(x) -x);
+double lowerGamma (double n, double x) {
+	/* --- lower incomplete Gamma fn. */
+	assert((n > 0) && (x > 0));   /* check the function arguments */
+	return _series(n, x) *exp(n *log(x) -x);
 }  /* lowerGamma() */
 
 /*--------------------------------------------------------------------*/
 
-double upperGamma (double n, double x)
-{                               /* --- upper incomplete Gamma fn. */
-  assert((n > 0) && (x > 0));   /* check the function arguments */
-  return _cfrac(n, x) *exp(n *log(x) -x);
+double upperGamma (double n, double x) {
+	/* --- upper incomplete Gamma fn. */
+	assert((n > 0) && (x > 0));   /* check the function arguments */
+	return _cfrac(n, x) *exp(n *log(x) -x);
 }  /* upperGamma() */
 
 /*--------------------------------------------------------------------*/
 
-double GammaP (double n, double x)
-{                               /* --- regularized Gamma function P */
-  assert((n > 0) && (x >= 0));  /* check the function arguments */
-  if (x <=  0) return 0;        /* treat x = 0 as a special case */
-  if (x < n+1) return _series(n, x) *exp(n *log(x) -x -logGamma(n));
-  return 1 -_cfrac(n, x) *exp(n *log(x) -x -logGamma(n));
+double GammaP (double n, double x) {
+	/* --- regularized Gamma function P */
+	assert((n > 0) && (x >= 0));  /* check the function arguments */
+
+	if (x <=  0) {
+		return 0;    /* treat x = 0 as a special case */
+	}
+
+	if (x < n+1) {
+		return _series(n, x) *exp(n *log(x) -x -logGamma(n));
+	}
+
+	return 1 -_cfrac(n, x) *exp(n *log(x) -x -logGamma(n));
 }  /* GammaP() */
 
 /*--------------------------------------------------------------------*/
 
-double GammaQ (double n, double x)
-{                               /* --- regularized Gamma function Q */
-  assert((n > 0) && (x >= 0));  /* check the function arguments */
-  if (x <=  0) return 1;        /* treat x = 0 as a special case */
-  if (x < n+1) return 1 -_series(n, x) *exp(n *log(x) -x -logGamma(n));
-  return _cfrac(n, x) *exp(n *log(x) -x -logGamma(n));
+double GammaQ (double n, double x) {
+	/* --- regularized Gamma function Q */
+	assert((n > 0) && (x >= 0));  /* check the function arguments */
+
+	if (x <=  0) {
+		return 1;    /* treat x = 0 as a special case */
+	}
+
+	if (x < n+1) {
+		return 1 -_series(n, x) *exp(n *log(x) -x -logGamma(n));
+	}
+
+	return _cfrac(n, x) *exp(n *log(x) -x -logGamma(n));
 }  /* GammaQ() */
 
 /*----------------------------------------------------------------------
@@ -259,187 +316,298 @@ P(k/2,x/2), where k is a natural number, is the cumulative distribution
 function (cdf) of a chi^2 distribution with k degrees of freedom.
 ----------------------------------------------------------------------*/
 
-double Gammapdf (double x, double k, double theta)
-{                               /* --- probability density function */
-  assert((k > 0) && (theta > 0));
-  if (x <  0) return 0;         /* support is non-negative x */
-  if (x <= 0) return (k == 1) ? 1/theta : 0;
-  if (k == 1) return exp(-x/theta) /theta;
-  return exp ((k-1) *log(x/theta) -x/theta -logGamma(k)) /theta;
+double Gammapdf (double x, double k, double theta) {
+	/* --- probability density function */
+	assert((k > 0) && (theta > 0));
+
+	if (x <  0) {
+		return 0;    /* support is non-negative x */
+	}
+
+	if (x <= 0) {
+		return (k == 1) ? 1/theta : 0;
+	}
+
+	if (k == 1) {
+		return exp(-x/theta) /theta;
+	}
+
+	return exp ((k-1) *log(x/theta) -x/theta -logGamma(k)) /theta;
 }  /* Gammapdf() */
 
 /*--------------------------------------------------------------------*/
 #ifdef GAMMAQTL
 
-double GammaqtlP (double prob, double k, double theta)
-{                               /* --- quantile of Gamma distribution */
-  int    n = 0;                 /* loop variable */
-  double x, f, a, d, dx, dp;    /* buffers */
+double GammaqtlP (double prob, double k, double theta) {
+	/* --- quantile of Gamma distribution */
+	int    n = 0;                 /* loop variable */
+	double x, f, a, d, dx, dp;    /* buffers */
+	assert((k > 0) && (theta > 0) /* check the function arguments */
+	       && (prob >= 0) && (prob <= 1));
 
-  assert((k > 0) && (theta > 0) /* check the function arguments */
-      && (prob >= 0) && (prob <= 1));
-  if (prob >= 1.0) return DBL_MAX;
-  if (prob <= 0.0) return 0;    /* handle limiting values */
-  if      (prob < 0.05) x = exp(logGamma(k) +log(prob) /k);
-  else if (prob > 0.95) x = logGamma(k) -log1p(-prob);
-  else {                        /* distinguish three prob. ranges */
-    f = unitqtlP(prob); a = sqrt(k);
-    x = (f >= -a) ? a *f +k : k;
-  }                             /* compute initial approximation */
-  do {                          /* Lagrange's interpolation */
-    dp = prob -GammacdfP(x, k, 1);
-    if ((dp == 0) || (++n > 33)) break;
-    f = Gammapdf(x, k, 1);
-    a = 2 *fabs(dp/x);
-    a = dx = dp /((a > f) ? a : f);
-    d = -0.25 *((k-1)/x -1) *a*a;
-    if (fabs(d) < fabs(a)) dx += d;
-    if (x +dx > 0) x += dx;
-    else           x /= 2;
-  } while (fabs(a) > 1e-10 *x);
-  if (fabs(dp) > EPS_QTL *prob) return -1;
-  return x *theta;              /* check for convergence and */
+	if (prob >= 1.0) {
+		return DBL_MAX;
+	}
+
+	if (prob <= 0.0) {
+		return 0;    /* handle limiting values */
+	}
+
+	if      (prob < 0.05) {
+		x = exp(logGamma(k) +log(prob) /k);
+	} else if (prob > 0.95) {
+		x = logGamma(k) -log1p(-prob);
+	} else {                      /* distinguish three prob. ranges */
+		f = unitqtlP(prob);
+		a = sqrt(k);
+		x = (f >= -a) ? a *f +k : k;
+	}                             /* compute initial approximation */
+
+	do {                          /* Lagrange's interpolation */
+		dp = prob -GammacdfP(x, k, 1);
+
+		if ((dp == 0) || (++n > 33)) {
+			break;
+		}
+
+		f = Gammapdf(x, k, 1);
+		a = 2 *fabs(dp/x);
+		a = dx = dp /((a > f) ? a : f);
+		d = -0.25 *((k-1)/x -1) *a*a;
+
+		if (fabs(d) < fabs(a)) {
+			dx += d;
+		}
+
+		if (x +dx > 0) {
+			x += dx;
+		} else {
+			x /= 2;
+		}
+	} while (fabs(a) > 1e-10 *x);
+
+	if (fabs(dp) > EPS_QTL *prob) {
+		return -1;
+	}
+
+	return x *theta;              /* check for convergence and */
 }  /* GammaqtlP() */            /* return the computed quantile */
 
 /*--------------------------------------------------------------------*/
 
-double GammaqtlQ (double prob, double k, double theta)
-{                               /* --- quantile of Gamma distribution */
-  int    n = 0;                 /* loop variable */
-  double x, f, a, d, dx, dp;    /* buffers */
+double GammaqtlQ (double prob, double k, double theta) {
+	/* --- quantile of Gamma distribution */
+	int    n = 0;                 /* loop variable */
+	double x, f, a, d, dx, dp;    /* buffers */
+	assert((k > 0) && (theta > 0) /* check the function arguments */
+	       && (prob >= 0) && (prob <= 1));
 
-  assert((k > 0) && (theta > 0) /* check the function arguments */
-      && (prob >= 0) && (prob <= 1));
-  if (prob <= 0.0) return DBL_MAX;
-  if (prob >= 1.0) return 0;    /* handle limiting values */
-  if      (prob < 0.05) x = logGamma(k) -log(prob);
-  else if (prob > 0.95) x = exp(logGamma(k) +log1p(-prob) /k);
-  else {                        /* distinguish three prob. ranges */
-    f = unitqtlQ(prob); a = sqrt(k);
-    x = (f >= -a) ? a *f +k : k;
-  }                             /* compute initial approximation */
-  do {                          /* Lagrange's interpolation */
-    dp = prob -GammacdfQ(x, k, 1);
-    if ((dp == 0) || (++n > 33)) break;
-    f = Gammapdf(x, k, 1);
-    a = 2 *fabs(dp/x);
-    a = dx = -dp /((a > f) ? a : f);
-    d = -0.25 *((k-1)/x -1) *a*a;
-    if (fabs(d) < fabs(a)) dx += d;
-    if (x +dx > 0) x += dx;
-    else           x /= 2;
-  } while (fabs(a) > 1e-10 *x);
-  if (fabs(dp) > EPS_QTL *prob) return -1;
-  return x *theta;              /* check for convergence and */
+	if (prob <= 0.0) {
+		return DBL_MAX;
+	}
+
+	if (prob >= 1.0) {
+		return 0;    /* handle limiting values */
+	}
+
+	if      (prob < 0.05) {
+		x = logGamma(k) -log(prob);
+	} else if (prob > 0.95) {
+		x = exp(logGamma(k) +log1p(-prob) /k);
+	} else {                      /* distinguish three prob. ranges */
+		f = unitqtlQ(prob);
+		a = sqrt(k);
+		x = (f >= -a) ? a *f +k : k;
+	}                             /* compute initial approximation */
+
+	do {                          /* Lagrange's interpolation */
+		dp = prob -GammacdfQ(x, k, 1);
+
+		if ((dp == 0) || (++n > 33)) {
+			break;
+		}
+
+		f = Gammapdf(x, k, 1);
+		a = 2 *fabs(dp/x);
+		a = dx = -dp /((a > f) ? a : f);
+		d = -0.25 *((k-1)/x -1) *a*a;
+
+		if (fabs(d) < fabs(a)) {
+			dx += d;
+		}
+
+		if (x +dx > 0) {
+			x += dx;
+		} else {
+			x /= 2;
+		}
+	} while (fabs(a) > 1e-10 *x);
+
+	if (fabs(dp) > EPS_QTL *prob) {
+		return -1;
+	}
+
+	return x *theta;              /* check for convergence and */
 }  /* GammaqtlQ() */            /* return the computed quantile */
 
 #endif
 /*--------------------------------------------------------------------*/
 #ifdef GAMMA_MAIN
 
-int main (int argc, char *argv[])
-{                               /* --- main function */
-  double x;                     /* argument */
+int main (int argc, char* argv[]) {
+	/* --- main function */
+	double x;                     /* argument */
 
-  if (argc != 2) {              /* if wrong number of arguments given */
-    printf("usage: %s x\n", argv[0]);
-    printf("compute (logarithm of) Gamma function\n");
-    return 0;                   /* print a usage message */
-  }                             /* and abort the program */
-  x = atof(argv[1]);            /* get argument */
-  if (x <= 0) { printf("%s: x must be > 0\n", argv[0]); return -1; }
-  printf("   Gamma(%.16g)  = % .20g\n", x, Gamma(x));
-  printf("ln(Gamma(%.16g)) = % .20g\n", x, logGamma(x));
-  return 0;                     /* compute and print Gamma function */
+	if (argc != 2) {              /* if wrong number of arguments given */
+		printf("usage: %s x\n", argv[0]);
+		printf("compute (logarithm of) Gamma function\n");
+		return 0;                   /* print a usage message */
+	}                             /* and abort the program */
+
+	x = atof(argv[1]);            /* get argument */
+
+	if (x <= 0) {
+		printf("%s: x must be > 0\n", argv[0]);
+		return -1;
+	}
+
+	printf("   Gamma(%.16g)  = % .20g\n", x, Gamma(x));
+	printf("ln(Gamma(%.16g)) = % .20g\n", x, logGamma(x));
+	return 0;                     /* compute and print Gamma function */
 }  /* main() */
 
 #endif
 /*--------------------------------------------------------------------*/
 #ifdef GAMMAPDF_MAIN
 
-int main (int argc, char *argv[])
-{                               /* --- main function */
-  double shape = 1;             /* shape parameter */
-  double scale = 1;             /* scale parameter */
-  double x;                     /* argument value */
+int main (int argc, char* argv[]) {
+	/* --- main function */
+	double shape = 1;             /* shape parameter */
+	double scale = 1;             /* scale parameter */
+	double x;                     /* argument value */
 
-  if ((argc < 2) || (argc > 4)){/* if wrong number of arguments */
-    printf("usage: %s arg [shape scale]\n", argv[0]);
-    printf("compute probability density function "
-           "of the gamma distribution\n");
-    return 0;                   /* print a usage message */
-  }                             /* and abort the program */
-  x = atof(argv[1]);            /* get the argument value */
-  if (argc > 2) shape = atof(argv[2]);
-  if (shape <= 0) {             /* get the parameters */
-    printf("%s: invalid shape parameter\n", argv[0]); return -1; }
-  if (argc > 3) scale = atof(argv[3]);
-  if (scale <= 0) {             /* get the parameters */
-    printf("%s: invalid scale parameter\n", argv[0]); return -1; }
-  printf("gamma: f(%.16g; %.16g, %.16g) = %.16g\n",
-         x, shape, scale, Gammapdf(x, shape, scale));
-  return 0;                     /* compute and print density */
+	if ((argc < 2) || (argc > 4)) { /* if wrong number of arguments */
+		printf("usage: %s arg [shape scale]\n", argv[0]);
+		printf("compute probability density function "
+		       "of the gamma distribution\n");
+		return 0;                   /* print a usage message */
+	}                             /* and abort the program */
+
+	x = atof(argv[1]);            /* get the argument value */
+
+	if (argc > 2) {
+		shape = atof(argv[2]);
+	}
+
+	if (shape <= 0) {             /* get the parameters */
+		printf("%s: invalid shape parameter\n", argv[0]);
+		return -1;
+	}
+
+	if (argc > 3) {
+		scale = atof(argv[3]);
+	}
+
+	if (scale <= 0) {             /* get the parameters */
+		printf("%s: invalid scale parameter\n", argv[0]);
+		return -1;
+	}
+
+	printf("gamma: f(%.16g; %.16g, %.16g) = %.16g\n",
+	       x, shape, scale, Gammapdf(x, shape, scale));
+	return 0;                     /* compute and print density */
 }  /* main() */
 
 #endif
 /*--------------------------------------------------------------------*/
 #ifdef GAMMACDF_MAIN
 
-int main (int argc, char *argv[])
-{                               /* --- main function */
-  double shape = 1;             /* shape parameter */
-  double scale = 1;             /* scale parameter */
-  double x;                     /* argument value */
+int main (int argc, char* argv[]) {
+	/* --- main function */
+	double shape = 1;             /* shape parameter */
+	double scale = 1;             /* scale parameter */
+	double x;                     /* argument value */
 
-  if ((argc < 2) || (argc > 4)){/* if wrong number of arguments */
-    printf("usage: %s arg [shape scale]\n", argv[0]);
-    printf("compute cumulative distribution function "
-           "of the gamma distribution\n");
-    return 0;                   /* print a usage message */
-  }                             /* and abort the program */
-  x = atof(argv[1]);            /* get the argument value */
-  if (argc > 2) shape = atof(argv[2]);
-  if (shape <= 0) {             /* get the parameters */
-    printf("%s: invalid shape parameter\n", argv[0]); return -1; }
-  if (argc > 3) scale = atof(argv[3]);
-  if (scale <= 0) {             /* get the parameters */
-    printf("%s: invalid scale parameter\n", argv[0]); return -1; }
-  printf("gamma: F(% .16g; %.16g, %.16g) = %.16g\n",
-         x, shape, scale, GammacdfP(x, shape, scale));
-  printf("   1 - F(% .16g; %.16g, %.16g) = %.16g\n",
-         x, shape, scale, GammacdfQ(x, shape, scale));
-  return 0;                     /* compute and print probability */
+	if ((argc < 2) || (argc > 4)) { /* if wrong number of arguments */
+		printf("usage: %s arg [shape scale]\n", argv[0]);
+		printf("compute cumulative distribution function "
+		       "of the gamma distribution\n");
+		return 0;                   /* print a usage message */
+	}                             /* and abort the program */
+
+	x = atof(argv[1]);            /* get the argument value */
+
+	if (argc > 2) {
+		shape = atof(argv[2]);
+	}
+
+	if (shape <= 0) {             /* get the parameters */
+		printf("%s: invalid shape parameter\n", argv[0]);
+		return -1;
+	}
+
+	if (argc > 3) {
+		scale = atof(argv[3]);
+	}
+
+	if (scale <= 0) {             /* get the parameters */
+		printf("%s: invalid scale parameter\n", argv[0]);
+		return -1;
+	}
+
+	printf("gamma: F(% .16g; %.16g, %.16g) = %.16g\n",
+	       x, shape, scale, GammacdfP(x, shape, scale));
+	printf("   1 - F(% .16g; %.16g, %.16g) = %.16g\n",
+	       x, shape, scale, GammacdfQ(x, shape, scale));
+	return 0;                     /* compute and print probability */
 }  /* main() */
 
 #endif
 /*--------------------------------------------------------------------*/
 #ifdef GAMMAQTL_MAIN
 
-int main (int argc, char *argv[])
-{                               /* --- main function */
-  double shape = 1;             /* shape parameter */
-  double scale = 1;             /* scale parameter */
-  double prob;                  /* argument value */
+int main (int argc, char* argv[]) {
+	/* --- main function */
+	double shape = 1;             /* shape parameter */
+	double scale = 1;             /* scale parameter */
+	double prob;                  /* argument value */
 
-  if ((argc < 2) || (argc > 4)){/* if wrong number of arguments */
-    printf("usage: %s prob [shape scale]\n", argv[0]);
-    printf("compute quantile of the gamma distribution\n");
-    return 0;                   /* print a usage message */
-  }                             /* and abort the program */
-  prob = atof(argv[1]);         /* get the probability */
-  if ((prob < 0) || (prob > 1)){/* and check it */
-    printf("%s: invalid probability\n", argv[0]); return -1; }
-  if (argc > 2) shape = atof(argv[2]);
-  if (shape <= 0) {             /* get the parameters */
-    printf("%s: invalid shape parameter\n", argv[0]); return -1; }
-  if (argc > 3) scale = atof(argv[3]);
-  if (scale <= 0) {             /* get the parameters */
-    printf("%s: invalid scale parameter\n", argv[0]); return -1; }
-  printf("gamma: F(% .16g; %.16g, %.16g) = %.16g\n",
-         GammaqtlP(prob, shape, scale), shape, scale, prob);
-  printf("   1 - F(% .16g; %.16g, %.16g) = %.16g\n",
-         GammaqtlQ(prob, shape, scale), shape, scale, prob);
-  return 0;                     /* compute and print probability */
+	if ((argc < 2) || (argc > 4)) { /* if wrong number of arguments */
+		printf("usage: %s prob [shape scale]\n", argv[0]);
+		printf("compute quantile of the gamma distribution\n");
+		return 0;                   /* print a usage message */
+	}                             /* and abort the program */
+
+	prob = atof(argv[1]);         /* get the probability */
+
+	if ((prob < 0) || (prob > 1)) { /* and check it */
+		printf("%s: invalid probability\n", argv[0]);
+		return -1;
+	}
+
+	if (argc > 2) {
+		shape = atof(argv[2]);
+	}
+
+	if (shape <= 0) {             /* get the parameters */
+		printf("%s: invalid shape parameter\n", argv[0]);
+		return -1;
+	}
+
+	if (argc > 3) {
+		scale = atof(argv[3]);
+	}
+
+	if (scale <= 0) {             /* get the parameters */
+		printf("%s: invalid scale parameter\n", argv[0]);
+		return -1;
+	}
+
+	printf("gamma: F(% .16g; %.16g, %.16g) = %.16g\n",
+	       GammaqtlP(prob, shape, scale), shape, scale, prob);
+	printf("   1 - F(% .16g; %.16g, %.16g) = %.16g\n",
+	       GammaqtlQ(prob, shape, scale), shape, scale, prob);
+	return 0;                     /* compute and print probability */
 }  /* main() */
 
 #endif
