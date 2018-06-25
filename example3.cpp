@@ -131,12 +131,14 @@ int main() {
 		}
 	}
 
-	std::cout<<"averageiter:"<<iter_num_arr[0]<<std::endl;
+	std::cout<<"averageiter: "<<iter_num_arr[0]<<std::endl;
 	error=max/norm1;
-	std::cout<<"the relative error under infinite norm is:"<<error<<std::endl;
+	std::cout.setf(std::ios::scientific);
+	std::cout<<"the relative error under infinite norm is: "<<error<<std::endl;
+	std::cout.unsetf(std::ios::scientific);
 	std::cout.setf(std::ios::fixed);
 	s=(double)(t2-t1)/CLOCKS_PER_SEC;
-	std::cout<<std::setprecision(7)<<"the running time is :"<<s<<std::endl;
+	std::cout<<std::setprecision(7)<<"the running time is : "<<s<<std::endl;
 	/*
 	 for (i=0;i<Ms;i++)
 	 {
