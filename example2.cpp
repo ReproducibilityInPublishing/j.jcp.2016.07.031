@@ -4,9 +4,9 @@
 #include <time.h>
 #include <iomanip> 
 #define PI  3.1415926535897932384626433832
-const uint_32 level=9;
-const uint_32 N=32;
-const double X_L=0,X_R=0.5,Y_Low=-1,Y_Upp=1,T=0.5,alpha=1.0/6.0;
+const uint_32 level=2;
+const uint_32 N=15000;
+const double X_L=-1,X_R=1,Y_Low=-1,Y_Upp=1,T=0.5,alpha=0.01;
 const double eps=0.5e-8;
 const double tol=1.0e-8;
 double inf_norm_real(double* vec,uint_32 veclen);
@@ -50,8 +50,11 @@ int main()
     double* exactsol=new double[Ms];
 	double mh1,mh2,tmalpha=3-alpha,tq,tptma,oneoverh1s=1/(h1*h1),oneoverh2s=1/(h2*h2);
 	double x_s=X_L+0.5*h1,x_e=X_L+(M+0.5)*h1,y_s=Y_Low+0.5*h2,y_e=Y_Low+(M+0.5)*h2;
-	double expxl=exp(X_L),expxr=exp(X_R),expyl=exp(Y_Low),expyu=exp(Y_Upp);
-	double oneoh1sxl=oneoverh1s*expxl,oneoh1sxr=oneoverh1s*expxr,oneoh2syl=oneoverh2s*expyl,oneoh2syu=oneoverh2s*expyu;
+	//double expxl=exp(X_L),expxr=exp(X_R),expyl=exp(Y_Low),expyu=exp(Y_Upp);
+	double oneoh1sxl=oneoverh1s*X_L;
+	double oneoh1sxr=oneoverh1s*X_R;
+	double oneoh2syl=oneoverh2s*Y_Low;
+	double oneoh2syu=oneoverh2s*Y_Upp;
 	double fovemtptma;
 	uint_32 Mm1=M-1,Mmmm1=Mm1*M;
 	for (i=0;i<M;i++)
@@ -63,24 +66,14 @@ int main()
 	for (j=0;j<M;j++)
 	{
 		indy=j*M;
+		double y = Y_Low+(j+1)*h2;
 		for (i=0;i<M;i++)
 		{
-			exactsol[indy+i]=expx[i]*expy[j];
+			double x = X_L+(i+1)*h1;
+			exactsol[indy+i]=x*y;
 		}
 	}
 	delete[]expx;delete[]expy;
-
-	double *expxy=new double[Ms];
-
-	for (j=0;j<M;j++)
-	{
-		indy=j*M;
-		mh2=Y_Low+(j+1)*h2;
-		for (i=0;i<M;i++)
-		{
-			expxy[indy+i]=exp(mh2*(X_L+(i+1)*h1));
-		}
-	}
 
 	for (n=0;n<N;n++)
 	{
@@ -96,7 +89,7 @@ int main()
 			for (i=0;i<M;i++)
 			{
 				mh1=X_L+(i+1)*h1;
-				rhs[n][indy+i].r=exactsol[indy+i]*(fovemtptma-tq*expxy[indy+i]*(2+mh1+mh2));
+				rhs[n][indy+i].r=exactsol[indy+i]*fovemtptma-tq*exp(exactsol[indy+i]+mh1*mh1+mh2*mh2);
 				rhs[n][indy+i].i=0;
 			}
 			rhs[n][indy].r+=(oneoh1sxl*postv_func(x_s,mh2)*tq*exp(mh2));
@@ -109,7 +102,6 @@ int main()
 			rhs[n][Mmmm1+i].r+=(oneoh2syu*postv_func(mh1,y_e)*tq*exp(mh1));
 		}
 	}
-	delete[]expxy;
 
 
    double* iter_num_arr=new double[N];
