@@ -12,6 +12,8 @@ Reading paper and background to understand what the paper is trying to do.
 
 9:31:00 With August: Managed to figure out that example 3 seems to be producing example 2 from the paper, but perhaps with a different smoother. CPU times are an order of magnitude longer.
 
+10:11:45 Recap: rhs (from code) is the b (from paper) vector. Originally, I thought it was simply equal to f(x,y,t) from the paper, however there seems to be some subtlety related to how this b vector is defined. from the paper they say "b is a given vector containing information about f, phi, and psi on grid points"
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
@@ -36,4 +38,4 @@ It has thus far been difficult to decifer some of this code. It is written in a 
 
 Frac_div_appro_coeff[k] = g^{(a)}_k <- Deciphered by comparing article and code.
 
-
+Remaining to be understood: How the rhs vector (b in the article) is created from the f function, and boundary conditions defined for the problem.

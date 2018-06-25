@@ -3,7 +3,7 @@
 #include"gamma.h"
 #include <time.h>
 #include <iomanip>
-const uint_32 level=5;
+const uint_32 level=2;
 const uint_32 N=15000;
 const double X_L=-1, X_R=1, Y_Low=-1, Y_Upp=1, T=0.5, alpha=0.01;
 const double eps=0.5e-8;
