@@ -452,6 +452,7 @@ double Infnorm(complex* vec,uint_32 vec_len)
 	return sqrt(max_mod);
 }
 
+//(from paper notation:)  rhs := y sol := x residual := r
 void get_residual(double* offlaplacex, double* offlaplacey,complex* mainlaplace,complex* rhs,complex* sol,uint_32 M,complex* residual)
 {
 	uint_32 i,j,indy,indypre,indx,indnexts,Mm1=M-1,Mm2=M-2;
@@ -603,6 +604,7 @@ inline void In_Cplt_LU_Sol(double* offlaplacex,double*offlaplacey,complex* mainl
 	delete[]Lipk_i;
 }
 
+// Reduces resolution of function by roughly half. Accomplishes this by a kind of averaging.
 inline void Restr_Operator(complex* rh,complex* f2h,uint_32 M)
 {
 	uint_32 i,j,nM,ti,tip1,tip2,indh,ind2h,indhp1,indhp2;
