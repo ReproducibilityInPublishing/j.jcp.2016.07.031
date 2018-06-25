@@ -9,6 +9,9 @@ Reading paper and background to understand what the paper is trying to do.
 55:00 First pass through implementation section, Very basic understanding
 
 5:16:00 Attempt a couple fixes which I thought might fix the simulation. These fixes failed.
+
+9:31:00 With August: Managed to figure out that example 3 seems to be producing example 2 from the paper, but perhaps with a different smoother. CPU times are an order of magnitude longer.
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
