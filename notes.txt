@@ -8,6 +8,7 @@ Reading paper and background to understand what the paper is trying to do.
 
 55:00 First pass through implementation section, Very basic understanding
 
+5:16:00 Attempt a couple fixes which I thought might fix the simulation. These fixes failed.
 --- Notes ---
 
 AIM: Appoximate Inversion Method
@@ -21,3 +22,15 @@ It appears we have code for example 2 only. I don't know what example 3 was mean
 The problem is that the answers I'm getting with the given example 2 aren't quite right. I will now go through the program and verify that everything looks like what was described in the paper.
 
 While not discussed in the paper at first, M denotes the internal spacial resolution. The spatial grid goes from 0 <= i <= M+1 for both the x coordinate and the y coordinate. This makes for M^2 internal spatial points. Because they are solving a 'boundary value problem', the edge coordinates are not part of the calculation of the next time step.
+
+I'm currenty cleaning up the code and adding comments so it's more clear what is going on. To help with this, I've applied my favorite coding style with astyle.
+
+If the grid matrix is u_x,y The code's vector packing convention is: u_1,1 u_2,1 u_3,1 ... u_N,1 u_1,2 u_2,2 .... So First iterate by x, then the next set is an iteration in y.
+
+I was incorrect earlier, example2.cpp seems to be for a problem that isn't in the article. example3.cpp seems to be closer.
+
+It has thus far been difficult to decifer some of this code. It is written in a very obscure way.
+
+Frac_div_appro_coeff[k] = g^{(a)}_k <- Deciphered by comparing article and code.
+
+

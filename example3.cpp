@@ -7,7 +7,7 @@
 
 // Some problem parameters
 const uint_32 level=9;
-const uint_32 N=64;
+const uint_32 N=32;
 const double X_L=-1, X_R=1, Y_Low=-1, Y_Upp=1, T=0.5, alpha=1./6.;
 const double eps=0.5e-8;
 const double tol=1.0e-8;
@@ -29,7 +29,7 @@ int main() {
 	uint_32 Ms=M*M;
 
 	// Set the inner spacial grid resolution.
-	double tau=T/(double)N
+	double tau=T/(double)N;
 	double h1 = (X_R-X_L)/(double)(M+1);
 	double h2 = (Y_Upp-Y_Low)/(double)(M+1);
 
@@ -120,18 +120,22 @@ int main() {
 			for (i=0; i<M; i++) {
 				mh1=X_L+(i+1)*h1;
 				rhs[n][indy+i].r=tp3ma*exactsol[indy+i]*fovergama4ma-expxy[indy+i]*tq*
-				                 (xarry[i]+yarray[j]);
+				                 exp(xarry[i]+yarray[j]);
 				rhs[n][indy+i].i=0;
 			}
 
 			rhs[n][indy].r+=(oneoh1sxl*postv_func(x_s, mh2)*tq*mh2);
 			rhs[n][indy+Mm1].r+=(oneoh1sxr*postv_func(x_e, mh2)*tq*mh2);
+			//rhs[n][indy].r+=(tq*x_s*mh2);
+			//rhs[n][indy+Mm1].r+=(tq*mh2*x_e);
 		}
 
 		for (i=0; i<M; i++) {
 			mh1=X_L+(i+1)*h1;
 			rhs[n][i].r+=(oneoh2syl*postv_func(mh1, y_s)*tq*mh1);
+			//rhs[n][i].r+=(oneoh2syl*postv_func(mh1, y_s)*tq*mh1);
 			rhs[n][Mmmm1+i].r+=(oneoh2syu*postv_func(mh1, y_e)*tq*mh1);
+			//rhs[n][Mmmm1+i].r+=(oneoh2syu*postv_func(mh1, y_e)*tq*mh1);
 		}
 	}
 
