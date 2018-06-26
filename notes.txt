@@ -14,6 +14,10 @@ Reading paper and background to understand what the paper is trying to do.
 
 10:11:45 Recap: rhs (from code) is the b (from paper) vector. Originally, I thought it was simply equal to f(x,y,t) from the paper, however there seems to be some subtlety related to how this b vector is defined. from the paper they say "b is a given vector containing information about f, phi, and psi on grid points"
 
++1.5 hrs (didn't capture the time)
+
+11:01:43: Found a mistake in the paper!!! for example 2 f(x,y,t) = \frac{\Gamma(4)xyt^{3-\alpha}}{\Gamma(4-\alpha)}-(x^2+y^2)exp(xy)t^3 This means the example3 code we got is actually correct! I've also figured out how the edge terms for b are calculated. You simply refer to the discretization of the laplacian in the equation (4.3) and evaluate it on the edges of the domain. This quickly gives the edge terms from the code.
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
@@ -39,3 +43,5 @@ It has thus far been difficult to decifer some of this code. It is written in a 
 Frac_div_appro_coeff[k] = g^{(a)}_k <- Deciphered by comparing article and code.
 
 Remaining to be understood: How the rhs vector (b in the article) is created from the f function, and boundary conditions defined for the problem.
+
+article uses incorrect f(x,y,t)! should be as in the code. boundary conditions are calculated from the laplacian term. Just evaluate near the boundaries to see where the terms come from.
