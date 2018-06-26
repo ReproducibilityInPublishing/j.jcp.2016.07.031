@@ -18,6 +18,10 @@ Reading paper and background to understand what the paper is trying to do.
 
 11:01:43: Found a mistake in the paper!!! for example 2 f(x,y,t) = \frac{\Gamma(4)xyt^{3-\alpha}}{\Gamma(4-\alpha)}-(x^2+y^2)exp(xy)t^3 This means the example3 code we got is actually correct! I've also figured out how the edge terms for b are calculated. You simply refer to the discretization of the laplacian in the equation (4.3) and evaluate it on the edges of the domain. This quickly gives the edge terms from the code.
 
++45 minutes (didn't capture the time)
+
+11:40:26: Implemented example 1 as in the paper. I now get close to the values in the table along with cpu times an order of magnitude higher than the paper just like example 2
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
