@@ -472,9 +472,7 @@ inline double cpmodule_sq(complex z) {
 	return z.r*z.r+z.i*z.i;
 }
 
-inline double postv_func(double x, double y) {
-	return exp(x*y);
-}
+
 double Infnorm(complex* vec, uint_32 vec_len) {
 	double max_mod=cpmodule_sq(vec[0]), cur_mod;
 
