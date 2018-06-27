@@ -5,6 +5,7 @@
 #include "argument_parser.h"
 #include "defs.h"
 #include "example2.h"
+#include "reporter.h"
 
 int main(int argc, char** argv) {
 	uint_32 level=2;
@@ -45,4 +46,6 @@ int main(int argc, char** argv) {
 	std::cerr.unsetf(std::ios::scientific);
 	std::cerr.setf(std::ios::fixed);
 	std::cerr<<std::setprecision(7)<<"the running time is : "<<cpu_time<<std::endl;
+
+	reporter(level, N, X_L, X_R, Y_Low, Y_Upp, T, alpha, eps, tol, average_iter, cpu_time, infnorm_error);
 }
