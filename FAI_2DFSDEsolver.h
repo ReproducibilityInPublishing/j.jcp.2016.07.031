@@ -2,9 +2,9 @@
 #define _FAI_2DFSDESOLVER_H__
 #include<cmath>
 #include <iostream>
-#include"kiss_fft.h"
+#include "kiss_fft.h"
+#include "defs.h"
 #define  complex kiss_fft_cpx
-typedef unsigned int uint_32;
 /*..............................*/
 
 
@@ -72,7 +72,7 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	if (tol<=0) {
 		std::cout<<"FAI warning: the tolerance must be positive number!!!"<<std::endl;
 	}
-	//std::cout << "FAIsolver Starting" << std::endl;
+	std::cout << "FAIsolver Starting" << std::endl;
 
 	double oneoverN=1.0/(double)N;
 	double delta=pow(eps, oneoverN);
@@ -183,6 +183,7 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	kiss_fft_cleanup();
 	kiss_fft_free(cfg);
 	delete[]Ddelta;
+	std::cout << "FAIsolver finished" << std::endl;
 	iter_num_arr[0]/=(double)N;
 }
 uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
@@ -271,6 +272,7 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 		AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], sol, rhs,
 		               M_array[0], timepost, 0);
 		itertime++;
+		std::cout << "Iteration! (" << itertime << ")" << std::endl;
 	}
 
 	delete[]residual;

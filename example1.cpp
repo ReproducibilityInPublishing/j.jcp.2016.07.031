@@ -4,13 +4,9 @@
 #include <time.h>
 #include <iomanip>
 #include <cmath>
-const uint_32 level=2;
-const uint_32 N=8192;
-const double X_L=0, X_R=M_PI, Y_Low=0, Y_Upp=M_PI, T=0.5, alpha=0.01;
-const double eps=0.5e-8;
-const double tol=1.0e-8;
 double inf_norm_real(double* vec, uint_32 veclen);
-int main() {
+
+void example1(double& average_iter, double& cpu_time, double& infnorm_error, const uint_32 level, const uint_32 N, const double X_L, const double X_R, const double Y_Low, const double Y_Upp, const double T, const double alpha, const double eps, const double tol) {
 	uint_32 M, i, j, Ms;
 	clock_t t1, t2;
 	double s;
@@ -115,14 +111,17 @@ int main() {
 		}
 	}
 
-	std::cout<<"averageiter: "<<iter_num_arr[0]<<std::endl;
+	average_iter = iter_num_arr[0];
+	//std::cout<<"averageiter: "<<iter_num_arr[0]<<std::endl;
 	error=max/norm1;
-	std::cout.setf(std::ios::scientific);
-	std::cout<<"the relative error under infinite norm is: "<<error<<std::endl;
-	std::cout.unsetf(std::ios::scientific);
-	std::cout.setf(std::ios::fixed);
+	infnorm_error = error;
+	//std::cout.setf(std::ios::scientific);
+	//std::cout<<"the relative error under infinite norm is: "<<error<<std::endl;
+	//std::cout.unsetf(std::ios::scientific);
+	//std::cout.setf(std::ios::fixed);
 	s=(double)(t2-t1)/CLOCKS_PER_SEC;
-	std::cout<<std::setprecision(7)<<"the running time is : "<<s<<std::endl;
+	cpu_time = s;
+	//std::cout<<std::setprecision(7)<<"the running time is : "<<s<<std::endl;
 	/*
 	 for (i=0;i<Ms;i++)
 	 {

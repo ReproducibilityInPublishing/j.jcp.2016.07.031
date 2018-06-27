@@ -1,13 +1,40 @@
 all: example1 example2 example3
 
-example1: example1.cpp FAI_2DFSDEsolver.h
-	g++ example1.cpp kiss_fft.c -o example1
+argument_parser.o: argument_parser.cpp
+	g++ -c $< -o $@
 
-example2: example2.cpp FAI_2DFSDEsolver.h
-	g++ example2.cpp kiss_fft.c -o example2
+kiss_fft.o: kiss_fft.c
+	g++ -c $< -o $@
 
-example3: example3.cpp FAI_2DFSDEsolver.h
-	g++ example3.cpp kiss_fft.c -o example3
+example1.o: example1.cpp FAI_2DFSDEsolver.h
+	g++ -c $< -o $@
+
+example1_driver.o: example1_driver.cpp
+	g++ -c $< -o $@
+
+example1: example1_driver.o argument_parser.o example1.o kiss_fft.o
+	g++ $^ -o $@
+
+example2.o: example2.cpp FAI_2DFSDEsolver.h
+	g++ -c $< -o $@
+
+example2_driver.o: example2_driver.cpp
+	g++ -c $< -o $@
+
+example2: example2_driver.o argument_parser.o example2.o kiss_fft.o
+	g++ $^ -o $@
+
+example3.o: example3.cpp FAI_2DFSDEsolver.h
+	g++ -c $< -o $@
+
+example3_driver.o: example3_driver.cpp
+	g++ -c $< -o $@
+
+example3: example3_driver.o argument_parser.o example3.o kiss_fft.o
+	g++ $^ -o $@
+
+#solver: driver.cpp
+#	g++ driver.cpp -o solver
 
 clean:
-	@rm -f example1 example2 example3
+	@rm -f example1 example2 example3 *.o
