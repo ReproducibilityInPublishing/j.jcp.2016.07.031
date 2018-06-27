@@ -66,13 +66,13 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
                                      double Y_Upp, double* Frac_div_appro_coeff, complex** rhs, double eps,
                                      double iter_num_arr[1], double tol) {
 	if(level<2) {
-		std::cout<<"FAIsolver warning: level="<<level<<"is too small "<<std::endl;
+		std::cerr<<"FAIsolver warning: level="<<level<<"is too small "<<std::endl;
 	}
 
 	if (tol<=0) {
-		std::cout<<"FAI warning: the tolerance must be positive number!!!"<<std::endl;
+		std::cerr<<"FAI warning: the tolerance must be positive number!!!"<<std::endl;
 	}
-	std::cout << "FAIsolver Starting" << std::endl;
+	std::cerr << "FAIsolver Starting" << std::endl;
 
 	double oneoverN=1.0/(double)N;
 	double delta=pow(eps, oneoverN);
@@ -183,13 +183,13 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	kiss_fft_cleanup();
 	kiss_fft_free(cfg);
 	delete[]Ddelta;
-	std::cout << "FAIsolver finished" << std::endl;
+	std::cerr << "FAIsolver finished" << std::endl;
 	iter_num_arr[0]/=(double)N;
 }
 uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
                        double** offlaplacex, double** offlaplacey, complex** mainlaplace,
                        complex deltaFTFC, complex* rhs, complex* sol, double tol) {
-	//std::cout << "Vcycle_BLTDTDB called M_agrray_len: " << M_agrray_len << std::endl;
+	//std::cerr << "Vcycle_BLTDTDB called M_agrray_len: " << M_agrray_len << std::endl;
 	uint_32 i, j, tempMs, Ms;
 
 	for (j=0; j<M_agrray_len; j++) {
@@ -272,7 +272,7 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 		AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], sol, rhs,
 		               M_array[0], timepost, 0);
 		itertime++;
-		std::cout << "Iteration! (" << itertime << ")" << std::endl;
+		std::cerr << "Iteration! (" << itertime << ")" << std::endl;
 	}
 
 	delete[]residual;
@@ -288,13 +288,13 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 }
 double** offlaplacex_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
                               double X_R, double Y_Low, double Y_Upp) {
-	//std::cout << "offlapacex_generate called M_array_len: " << M_array_len << std::endl;
+	//std::cerr << "offlapacex_generate called M_array_len: " << M_array_len << std::endl;
 	double** offlaplacex=new double*[M_array_len];
 	double h1, oneovreh1s, h2, x, y;
 	uint_32 m, i, Mp1, Mm1, j, inds;
 
 	for (m=0; m<M_array_len; m++) {
-		//std::cout << "M_array[" << m << "]: " << M_array[m] << std::endl;
+		//std::cerr << "M_array[" << m << "]: " << M_array[m] << std::endl;
 		//parameter settings
 		Mp1=M_array[m]+1;
 		h1=(X_R-X_L)/(double)(Mp1);
@@ -319,7 +319,7 @@ double** offlaplacex_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
 
 double** offlaplacey_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
                               double X_R, double Y_Low, double Y_Upp) {
-	//std::cout << "offlapacey_generate called len: " << M_array_len << std::endl;
+	//std::cerr << "offlapacey_generate called len: " << M_array_len << std::endl;
 	double** offlaplacey=new double*[M_array_len];
 	double h1, oneovreh2s, h2, y, ys;
 	uint_32 m, i, Mp1, Mm1, j, M, inds;
@@ -351,7 +351,7 @@ double** offlaplacey_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
 complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
                                double** offlaplacex, double** offlaplacey, double X_L, double X_R,
                                double Y_Low, double Y_Upp) {
-	//std::cout << "mainlaplace_generate called len: " << M_array_len << std::endl;
+	//std::cerr << "mainlaplace_generate called len: " << M_array_len << std::endl;
 	complex** mainlaplace=new complex*[M_array_len];
 	double h1, oneovreh2s, h2, oneovreh1s, ypm, xp1, xp05, xpm, yp1, yp05, xpm05,
 	       ypm05;
@@ -492,7 +492,7 @@ double Infnorm(complex* vec, uint_32 vec_len) {
 void get_residual(double* offlaplacex, double* offlaplacey,
                   complex* mainlaplace, complex* rhs, complex* sol, uint_32 M,
                   complex* residual) {
-	//std::cout << "get_residual called" << std::endl;
+	//std::cerr << "get_residual called" << std::endl;
 	uint_32 i, j, indy, indypre, indx, indnexts, Mm1=M-1, Mm2=M-2;
 	indnexts=M;
 	residual[0]=cpplus(rhs[0], cpminus(cpplus(cpmultr(sol[1], offlaplacex[0]), \
@@ -556,7 +556,7 @@ void get_residual(double* offlaplacex, double* offlaplacey,
 }
 inline void In_Cplt_LU_Sol(double* offlaplacex, double* offlaplacey,
                            complex* mainlaplace, complex* rhs, complex* sol) {
-	//std::cout << "In_Cplt_LU_Sol called" << std::endl;
+	//std::cerr << "In_Cplt_LU_Sol called" << std::endl;
 	//use the direct solver "Incomplete LU factorization" to solve the linear system derived from the coarsest grid
 	int i, k, r, ub, cc, ind;
 	complex** Ui_ipk=new complex*[4];
@@ -675,7 +675,7 @@ inline void Restr_Operator(complex* rh, complex* f2h, uint_32 M) {
 	uint_32 i, j, nM, ti, tip1, tip2, indh, ind2h, indhp1, indhp2;
 	nM=(M-1)/2;
 
-	//std::cout << "Restr_Operator M: " << M << std::endl;
+	//std::cerr << "Restr_Operator M: " << M << std::endl;
 	for (j=0; j<nM; j++) {
 		indh=2*j*M;
 		indhp1=indh+M;
@@ -699,7 +699,7 @@ inline void Restr_Operator(complex* rh, complex* f2h, uint_32 M) {
 
 
 inline void Interp_Operator(complex* u2h, complex* uh, uint_32 M) {
-	//std::cout << "Interp_Operator M: " << M << std::endl;
+	//std::cerr << "Interp_Operator M: " << M << std::endl;
 	uint_32 i, j, nM, Mm1=M-1, oddjmnm, evenjmnm, jp1m, jm, nMm2, nMm1;
 	nM=2*M+1;
 	nMm2=nM-2;
@@ -814,10 +814,10 @@ inline void AXLGS_smoother(double* offlaplacex, double* offlaplacey,
                            complex* mainlaplace, complex* initialgs, complex* rhs, uint_32 M, uint_32 time,
                            bool iszeroinitial) {
 	if (time<1) {
-		std::cout<<"FAI warning: the iteration time must be larger that zero!!"<<std::endl;
+		std::cerr<<"FAI warning: the iteration time must be larger that zero!!"<<std::endl;
 		return;
 	}
-	//std::cout << "AXLGS_smoother called! M: " << M << std::endl;
+	//std::cerr << "AXLGS_smoother called! M: " << M << std::endl;
 
 	uint_32 Mm1, i, j, Mm2, vecpreinds, vecnextinds, veccurinds, offxcurinds, k,
 	        ntime=time;

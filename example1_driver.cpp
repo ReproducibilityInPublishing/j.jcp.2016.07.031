@@ -2,9 +2,11 @@
 #include <cstdio>
 #include <iomanip>
 #include <cmath>
+#include <string>
 #include "argument_parser.h"
 #include "defs.h"
 #include "example1.h"
+#include "reporter.h"
 
 int main(int argc, char** argv) {
 	uint_32 level=2;
@@ -28,21 +30,23 @@ int main(int argc, char** argv) {
 	double infnorm_error;
 	example1(average_iter, cpu_time, infnorm_error, level, N, X_L, X_R, Y_Low, Y_Upp, T, alpha, eps, tol);
 
-	std::cout << "Driver parameter summary" << std::endl;
-	std::cout << "level: " << level << std::endl;
-	std::cout << "N: " << N << std::endl;
-	std::cout << "alpha: " << alpha << std::endl;
-	std::cout << "Spatial Domain: (X_L,Y_Low,X_R,Y_Upp) = (" << X_L << "," << Y_Low << "," << X_R << "," << Y_Upp << ")" << std::endl;
-	std::cout << "Time Domain: [0,T] = [0," << T << "]" << std::endl;
-	std::cout << "Approximation parameter epsilon: " << eps << std::endl;
-	std::cout << "Iteration Tolerance: " << tol << std::endl;
+	std::cerr << "Driver parameter summary" << std::endl;
+	std::cerr << "level: " << level << std::endl;
+	std::cerr << "N: " << N << std::endl;
+	std::cerr << "alpha: " << alpha << std::endl;
+	std::cerr << "Spatial Domain: (X_L,Y_Low,X_R,Y_Upp) = (" << X_L << "," << Y_Low << "," << X_R << "," << Y_Upp << ")" << std::endl;
+	std::cerr << "Time Domain: [0,T] = [0," << T << "]" << std::endl;
+	std::cerr << "Approximation parameter epsilon: " << eps << std::endl;
+	std::cerr << "Iteration Tolerance: " << tol << std::endl;
 
-	std::cout << std::endl;
-	std::cout << "Results:" << std::endl;
-	std::cout<<"averageiter: "<<average_iter<<std::endl;
-	std::cout.setf(std::ios::scientific);
-	std::cout<<"the relative error under infinite norm is: "<<infnorm_error<<std::endl;
-	std::cout.unsetf(std::ios::scientific);
-	std::cout.setf(std::ios::fixed);
-	std::cout<<std::setprecision(7)<<"the running time is : "<<cpu_time<<std::endl;
+	std::cerr << std::endl;
+	std::cerr << "Results:" << std::endl;
+	std::cerr<<"averageiter: "<<average_iter<<std::endl;
+	std::cerr.setf(std::ios::scientific);
+	std::cerr<<"the relative error under infinite norm is: "<<infnorm_error<<std::endl;
+	std::cerr.unsetf(std::ios::scientific);
+	std::cerr.setf(std::ios::fixed);
+	std::cerr<<std::setprecision(7)<<"the running time is : "<<cpu_time<<std::endl;
+
+	reporter(level, N, X_L, X_R, Y_Low, Y_Upp, T, alpha, eps, tol, average_iter, cpu_time, infnorm_error);
 }

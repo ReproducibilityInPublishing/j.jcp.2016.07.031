@@ -160,18 +160,18 @@ void example3(double& average_iter, double& cpu_time, double& infnorm_error, con
 	}
 
 	average_iter = averageiter(iter_num_arr, N);
-	//std::cout<<"averageiter:"<<averageiter(iter_num_arr, N)<<std::endl;
+	//std::cerr<<"averageiter:"<<averageiter(iter_num_arr, N)<<std::endl;
 	error=max/norm1;
 	infnorm_error = error;
-	//std::cout<<"the relative error under infinite norm is:"<<error<<std::endl;
+	//std::cerr<<"the relative error under infinite norm is:"<<error<<std::endl;
 	s=(double)(t2-t1)/CLOCKS_PER_SEC;
 	cpu_time = s;
-	//std::cout.setf(std::ios::fixed);
-	//std::cout<<std::setprecision(7)<<"the running time is :"<<s<<std::endl;
+	//std::cerr.setf(std::ios::fixed);
+	//std::cerr<<std::setprecision(7)<<"the running time is :"<<s<<std::endl;
 	/*
 	 for (i=0;i<Ms;i++)
 	 {
-		 std::cout<<exactsol[i]*pow(T,onepalpha)-rhs[N-1][i].r<<std::endl;
+		 std::cerr<<exactsol[i]*pow(T,onepalpha)-rhs[N-1][i].r<<std::endl;
 	 }
 	*/
 	delete[]exactsol;
