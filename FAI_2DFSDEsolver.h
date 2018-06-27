@@ -348,6 +348,7 @@ double** offlaplacey_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
 	return offlaplacey;
 }
 
+// This function generates the 'diagonal' components of the laplace operator.
 complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
                                double** offlaplacex, double** offlaplacey, double X_L, double X_R,
                                double Y_Low, double Y_Upp) {
@@ -376,6 +377,8 @@ complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
 		ypm=Y_Low+M*h2;
 		xpm05=X_L+(M+0.5)*h1;
 		ypm05=Y_Low+(M+0.5)*h2;
+		// Top row
+		// upper left corner
 		mainlaplace[m][0].r=offlaplacex[m][0]+offlaplacey[m][0]+oneovreh1s*postv_func(
 		                        xp05, yp1)+oneovreh2s*postv_func(xp1, yp05);
 
@@ -384,36 +387,45 @@ complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
 			                    +oneovreh2s*postv_func(xp1+i*h1, yp05);
 		}
 
+		// upper right corner
 		mainlaplace[m][Mm1].r=offlaplacex[m][Mm2]+offlaplacey[m][Mm1]
 		                      +oneovreh1s*postv_func(xpm05, yp1)+oneovreh2s*postv_func(xpm, yp05);
 
+		//'Middle' rows'
 		for (j=1; j<Mm1; j++) {
 			indsy=j*M;
 			indsypre=(j-1)*M;
 			indsx=j*Mm1;
+			//left edge
 			mainlaplace[m][indsy].r=offlaplacey[m][indsy]+offlaplacey[m][indsypre]
 			                        +offlaplacex[m][indsx]+oneovreh1s*postv_func(xp05, yp1+j*h2);
 
+			//interior points
 			for (i=1; i<Mm1; i++) {
 				mainlaplace[m][indsy+i].r=offlaplacey[m][indsy+i]+offlaplacey[m][indsypre+i]
 				                          +offlaplacex[m][indsx+i]+offlaplacex[m][indsx+i-1];
 			}
 
+			//right edge
 			mainlaplace[m][indsy+Mm1].r=offlaplacey[m][indsy+Mm1]+offlaplacey[m][indsypre
 			                            +Mm1]+offlaplacex[m][indsx+Mm2]+oneovreh1s*postv_func(xpm05, yp1+j*h2);
 		}
 
+		//bottom row
 		indsypre=Mm2*M;
 		indsx=Mm1*Mm1;
 		indsy=Mm1*M;
+		//bottom left corner
 		mainlaplace[m][indsy].r=offlaplacex[m][indsx]+oneovreh1s*postv_func(xp05,
 		                        ypm)+offlaplacey[m][indsypre]+oneovreh2s*postv_func(xp1, ypm05);
 
+		//middle of bottom edge
 		for (i=1; i<Mm1; i++) {
 			mainlaplace[m][indsy+i].r=offlaplacex[m][indsx+i]+offlaplacex[m][indsx+i-1]
 			                          +offlaplacey[m][indsypre+i]+oneovreh2s*postv_func(xp1+i*h1, ypm05);
 		}
 
+		//bottom right corner
 		mainlaplace[m][indsy+Mm1].r=offlaplacex[m][indsx+Mm2]+offlaplacey[m][indsypre
 		                            +Mm1]+oneovreh1s*postv_func(xpm05, ypm)+oneovreh2s*postv_func(xpm, ypm05);
 	}
