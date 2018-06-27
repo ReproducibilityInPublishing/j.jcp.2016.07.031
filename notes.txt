@@ -55,3 +55,7 @@ Remaining to be understood: How the rhs vector (b in the article) is created fro
 article uses incorrect f(x,y,t)! should be as in the code. boundary conditions are calculated from the laplacian term. Just evaluate near the boundaries to see where the terms come from.
 
 example2.cpp that they sent us is the same as Example 2 from the paper except, u(x,y,t) = exp(x+y)t^3, p(x,y) = exp(xy), f(x,y,t) = exp(x+y)((Gamma(4)/Gamma(4-alpha))*t^(3-alpha)-(2+x+y)*exp(xy)t^3) I've added it in as example3.cpp now.
+
+Now that the code is in a more modular form which doesn't require re-compilation every time a new problem is to be run, we can explore how the currently implemented method is different from the reported 'AIMGM'. I strongly suspect it is different because the error is more than what is reported in cases with large N or M, the reported CPU time is an order of magnitude larger at least, and the average iteration number is incorrect as well.
+
+I have been suspecting that the multigrid method given to us in code is not the same as that used in the article. the multigrid function is called 'Vcycle_BLTDTDB' which does not match any description in the article we were sent, and which was supposed to be showing off the 'AIMGM' method. Out of curiosity, I had a look at other articles by these authors, None published recently seem to show off the method assuming the function name is an accurate description they would use in an article. A quick google search and google scholar search turned up no results for the BLTDTDB method.
