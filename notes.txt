@@ -22,6 +22,10 @@ Reading paper and background to understand what the paper is trying to do.
 
 11:40:26: Implemented example 1 as in the paper. I now get close to the values in the table along with cpu times an order of magnitude higher than the paper just like example 2
 
++1.5 hrs (didn't capture the time)
+
++30 mins (didn't capture the time)
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
@@ -49,3 +53,5 @@ Frac_div_appro_coeff[k] = g^{(a)}_k <- Deciphered by comparing article and code.
 Remaining to be understood: How the rhs vector (b in the article) is created from the f function, and boundary conditions defined for the problem.
 
 article uses incorrect f(x,y,t)! should be as in the code. boundary conditions are calculated from the laplacian term. Just evaluate near the boundaries to see where the terms come from.
+
+example2.cpp that they sent us is the same as Example 2 from the paper except, u(x,y,t) = exp(x+y)t^3, p(x,y) = exp(xy), f(x,y,t) = exp(x+y)((Gamma(4)/Gamma(4-alpha))*t^(3-alpha)-(2+x+y)*exp(xy)t^3) I've added it in as example3.cpp now.
