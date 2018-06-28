@@ -164,12 +164,14 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 		initialsolver[i].r = 0.;
 		initialsolver[i].i = 0.;
 	}
+	int num_calcs = 0;
 	iter_num_arr[0]=0;
 	//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
 	//                                mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
 	//std::cerr << "First time step" << std::endl;
 	iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
 	                              mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
+	num_calcs += 1;
 	delete[]rhs[0];
 	rhs[0]=initialsolver;
 	initialsolver=NULL;
@@ -178,19 +180,31 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 		//std::cerr << "time step i: " << i << std::endl;
 		deltaFTFC.i=FTFDAC[i].i;
 		deltaFTFC.r=FTFDAC[i].r-FTFDAC[i-1].r;
-		initialsolver=new complex[Msquare];
-		// Initialize - Wasn't here originally, maybe remove?
-		for (j = 0; j<Msquare; ++j) {
-			initialsolver[j].r = 0.;
-			initialsolver[j].i = 0.;
+		// Check that we don't have to calculate..
+		uint_32 i_prev = N-i;
+		if (i_prev >= i) {
+			initialsolver=new complex[Msquare];
+			// Initialize - Wasn't here originally, maybe remove?
+			for (j = 0; j<Msquare; ++j) {
+				initialsolver[j].r = 0.;
+				initialsolver[j].i = 0.;
+			}
+	
+			//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
+			//                                mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
+			iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
+			                              mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
+			num_calcs += 1;
+			delete[]rhs[i];
+			rhs[i]=initialsolver;
+			initialsolver=NULL;
+		} else {
+			//Let's Use an already calculated result.
+			for(j=0;j<Msquare;++j) {
+				rhs[i][j].r = rhs[i_prev][j].r;
+				rhs[i][j].i = -rhs[i_prev][j].i;
+			}
 		}
-		//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
-		//                                mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
-		iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
-		                              mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
-		delete[]rhs[i];
-		rhs[i]=initialsolver;
-		initialsolver=NULL;
 	}
 
 	delete[]FTFDAC;
@@ -222,7 +236,7 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	kiss_fft_free(cfg);
 	delete[]Ddelta;
 	std::cerr << "FAIsolver finished" << std::endl;
-	iter_num_arr[0]/=(double)N;
+	iter_num_arr[0]/=(double)num_calcs;
 }
 uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
                        double** offlaplacex, double** offlaplacey, complex** mainlaplace,
