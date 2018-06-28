@@ -33,6 +33,12 @@ complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
 uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
                        double** offlaplacex, double** offlaplacey, complex** mainlaplace,
                        complex deltaFTFC, complex* rhs, complex* sol, double tol);
+uint_32 Vcycle_AIMGM(uint_32* M_array, uint_32 M_agrray_len,
+                     double** offlaplacex, double** offlaplacey, complex** mainlaplace,
+                     complex deltaFTFC, complex* rhs, complex* sol, double tol);
+void AIMGM(uint_32* M_array, uint_32 M_array_len,
+	   double** offlaplacex, double** offlaplacey, complex** mainlaplace,
+	   complex deltaFTFC, complex** rhsides, complex** solutions);
 double Infnorm(complex* vec, uint_32 vec_len);
 void get_residual(double* offlaplacex, double* offlaplacey,
                   complex* mainlaplace, complex* right_hand_side, complex* sol, uint_32 M,
@@ -81,8 +87,10 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	complex* out=new complex[N];
 	uint_32 i;
 
+	std::cerr << "Deltas" << std::endl;
 	for (i=0; i<N; i++) {
 		Ddelta[i]=_Pow_int(delta, i);
+		std::cerr << Ddelta[i] << std::endl;
 	}
 
 	complex* FTFDAC=new complex[N];//fourier transformation of discrete Fractional derivative coefficients
@@ -98,7 +106,9 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 
 	kiss_fft(cfg, FTFDAC, FTFDAC); //do fft for FTFDAC
 
+	std::cerr << "FTFDAC: " << std::endl;
 	for (i=0; i<N; i++) {
+		std::cerr << FTFDAC[i].r << " + i" << FTFDAC[i].i << std::endl;
 		FTFDAC[i].i=-FTFDAC[i].i;
 		fin[i].i=0;
 	}
@@ -137,19 +147,35 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	                                 X_L, X_R, Y_Low, Y_Upp);
 	complex deltaFTFC=FTFDAC[0];
 	complex* initialsolver=new complex[Msquare];
+	// Initialize - Wasn't here originally, maybe remove?
+	for (i = 0; i<Msquare; ++i) {
+		initialsolver[i].r = 0.;
+		initialsolver[i].i = 0.;
+	}
 	iter_num_arr[0]=0;
-	iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
-	                                mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
+	//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
+	//                                mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
+	std::cerr << "First time step" << std::endl;
+	iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
+	                              mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
 	delete[]rhs[0];
 	rhs[0]=initialsolver;
 	initialsolver=NULL;
 
 	for (i=1; i<N; i++) {
+		std::cerr << "time step i: " << i << std::endl;
 		deltaFTFC.i=FTFDAC[i].i;
 		deltaFTFC.r=FTFDAC[i].r-FTFDAC[i-1].r;
 		initialsolver=new complex[Msquare];
-		iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
-		                                mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
+		// Initialize - Wasn't here originally, maybe remove?
+		for (j = 0; j<Msquare; ++j) {
+			initialsolver[j].r = 0.;
+			initialsolver[j].i = 0.;
+		}
+		//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
+		//                                mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
+		iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
+		                              mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
 		delete[]rhs[i];
 		rhs[i]=initialsolver;
 		initialsolver=NULL;
@@ -192,6 +218,7 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 	//std::cerr << "Vcycle_BLTDTDB called M_agrray_len: " << M_agrray_len << std::endl;
 	uint_32 i, j, tempMs, Ms;
 
+	//Here we add the identity terms from equation 2.5 to the diagonal elements which are contained in mainlaplace.
 	for (j=0; j<M_agrray_len; j++) {
 		tempMs=M_array[j]*M_array[j];
 
@@ -286,6 +313,186 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 	delete[]rhsides;
 	return itertime;
 }
+
+template<typename T> inline void report_vector(T* vec, uint_32 veclen) {
+	for (uint_32 i=0;i<veclen; ++i) {
+		std::cerr << vec[i] << ", ";
+	}
+}
+
+template<> inline void report_vector<complex> (complex* vec, uint_32 veclen) {
+	for (uint_32 i=0;i<veclen; ++i) {
+		std::cerr << vec[i].r << "+i" << vec[i].i << ", ";
+	}
+}
+
+void AIMGM(uint_32* M_array, uint_32 M_array_len,
+           double** offlaplacex, double** offlaplacey, complex** mainlaplace,
+           complex** rhsides, complex** solutions) {
+	std::cerr << "AIMGM: M_array_len: " << M_array_len << std::endl;
+	std::cerr << "AIMGM: M_array: ";
+	uint_32 Ms = M_array[0]*M_array[0];
+	report_vector(M_array, M_array_len);
+	std::cerr << std::endl;
+	std::cerr << "AIMGM: rhsides[0]: ";
+	report_vector(rhsides[0], Ms);
+	std::cerr << std::endl;
+	std::cerr << "AIMGM: solutions[0]: ";
+	report_vector(solutions[0], Ms);
+	std::cerr << std::endl;
+
+	if (M_array[0] == 3) {
+		In_Cplt_LU_Sol(offlaplacex[0], offlaplacey[0], mainlaplace[0], rhsides[0], solutions[0]);
+		return;
+	}
+
+	// The rest of the algorithm
+	uint_32 timepre=3;
+	uint_32 timepost=3;
+
+	// pre-smoothing
+	AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], solutions[0], rhsides[0],
+	               M_array[0], timepre, 0);
+	complex* residual=new complex[M_array[0]*M_array[0]];
+	get_residual(offlaplacex[0], offlaplacey[0], mainlaplace[0], rhsides[0], solutions[0],
+	             M_array[0], residual);
+
+	//restriction
+	Restr_Operator(residual, rhsides[1], M_array[1]);
+
+	delete [] residual;
+
+	//Recursive call on next layer down
+	AIMGM(M_array+1,M_array_len-1, offlaplacex+1, offlaplacey+1,mainlaplace+1,rhsides+1,solutions+1); 
+
+	//interpolation (may have incorrect M_array parameter)
+	Interp_Operator(solutions[1], solutions[0], M_array[1]);
+
+	//post smoothing
+	AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], solutions[0],
+	               rhsides[0], M_array[0], timepost, 0);
+
+//	iszeroinital=(itertime==0?1:0);
+
+
+//	curerror=Infnorm(residual, Ms)/normrhs;
+//
+//	if (curerror<tol) {
+//		break;
+//	}
+//
+//	for (j=1; j<Marrlenm1; j++) {
+//		//restriction
+//		Restr_Operator(residual, rhsides[j-1], M_array[j-1]);
+//		//presmoothing
+//		AXLGS_smoother(offlaplacex[j], offlaplacey[j], mainlaplace[j], solutions[j-1],
+//		               rhsides[j-1], M_array[j], timepre, 1);
+//		delete[]residual;
+//		residual=new complex[M_array[j]*M_array[j]];
+//		get_residual(offlaplacex[j], offlaplacey[j], mainlaplace[j], rhsides[j-1],
+//		             solutions[j-1], M_array[j], residual);
+//	}
+//
+//	j=Marrlenm1;
+//	Restr_Operator(residual, rhsides[j-1], M_array[j-1]);
+//	delete[]residual;
+//	//exactly solve at the coarsest grid
+//	In_Cplt_LU_Sol(offlaplacex[j], offlaplacey[j], mainlaplace[j], rhsides[j-1],
+//	               solutions[j-1]);
+//
+//	//post-Vcycle
+//	for (j=Marrlenm1-1; j>0; j--) {
+//		//interpolation
+//		Interp_Operator(solutions[j], solutions[j-1], M_array[j+1]);
+//		//smoothing
+//		AXLGS_smoother(offlaplacex[j], offlaplacey[j], mainlaplace[j], solutions[j-1],
+//		               rhsides[j-1], M_array[j], timepost, 0);
+//	}
+//
+//	Interp_Operator(solutions[0], sol, M_array[1]);
+//	//smoothing on the finest grid
+//	AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], sol, rhs,
+//	               M_array[0], timepost, 0);
+
+
+}
+
+uint_32 Vcycle_AIMGM(uint_32* M_array, uint_32 M_array_len,
+                     double** offlaplacex, double** offlaplacey, complex** mainlaplace,
+                     complex deltaFTFC, complex* rhs, complex* sol, double tol) {
+	std::cerr << "Vcycle_AIMGM: M_array_len: " << M_array_len << std::endl;
+	std::cerr << "Vcycle_AIMGM: M_array: ";
+	report_vector(M_array, M_array_len);
+	std::cerr << std::endl;
+	uint_32 tempMs, Ms;
+
+	// Prepare Lambda
+	//Here we add the identity terms from equation 2.5 to the diagonal elements which are contained in mainlaplace.
+	for (uint_32 j=0; j<M_array_len; j++) {
+		tempMs=M_array[j]*M_array[j];
+
+		for (uint_32 i=0; i<tempMs; i++) {
+			mainlaplace[j][i].i=deltaFTFC.i;
+			mainlaplace[j][i].r+=deltaFTFC.r;
+		}
+	}
+
+	// Prepare solutions and rhsides
+	complex** solutions=new complex*[M_array_len];
+	complex** rhsides=new complex*[M_array_len];
+
+	rhsides[0] = rhs;
+	solutions[0] = sol;
+	for (uint_32 i=1; i<M_array_len; i++) {
+		tempMs=M_array[i]*M_array[i];
+		solutions[i]=new complex[tempMs];
+		rhsides[i]=new complex[tempMs];
+	}
+
+	Ms=M_array[0]*M_array[0];
+	std::cerr << "Vcycle_AIMGM: rhs: ";
+	report_vector(rhs, Ms);
+	std::cerr << std::endl;
+	std::cerr << "Vcycle_AIMGM: sol: ";
+	report_vector(sol, Ms);
+	std::cerr << std::endl;
+
+	// Calculate the norm of r(0)
+	double normrhs = Infnorm(rhs,Ms);
+	double curerror = 0;
+	uint_32 iterations = 0;
+
+	int count = 0;
+	int max = 2;
+	do {
+		AIMGM(M_array, M_array_len, offlaplacex, offlaplacey, mainlaplace, rhsides, solutions);
+		complex* residual=new complex[M_array[0]*M_array[0]];
+		get_residual(offlaplacex[0], offlaplacey[0], mainlaplace[0], rhsides[0], solutions[0],
+		             M_array[0], residual);
+		double newnorm = Infnorm(residual, Ms);
+		curerror=newnorm/normrhs;
+		iterations += 1;
+		std::cerr << "Iteration finished(" << iterations << ")-> curerr: " << curerror << std::endl;
+		count += 1;
+		delete [] residual;
+		if (count >= max) {
+			// Quit early
+			exit(-1);
+		}
+	} while(curerror > tol);
+
+	// Algorithm complete.
+	// cleanup
+	for (uint_32 i=1; i<M_array_len; i++) {
+		tempMs=M_array[i]*M_array[i];
+		delete [] solutions[i];
+		delete [] rhsides[i];
+	}
+	delete [] solutions;
+	delete [] rhsides;
+	return iterations;
+}
+
 double** offlaplacex_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
                               double X_R, double Y_Low, double Y_Upp) {
 	//std::cerr << "offlapacex_generate called M_array_len: " << M_array_len << std::endl;
