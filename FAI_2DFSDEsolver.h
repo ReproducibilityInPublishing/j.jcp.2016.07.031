@@ -79,7 +79,7 @@ template<> inline void report_vector<complex> (complex* vec, uint_32 veclen) {
 	}
 }
 
-void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
+void Time_frac_diffusion_2Deq_AIMGM_solver(uint_32 N, uint_32 level, double X_L,
                                      double X_R, double Y_Low, \
                                      double Y_Upp, double* Frac_div_appro_coeff, complex** rhs, double eps,
                                      double iter_num_arr[1], double tol) {

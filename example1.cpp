@@ -88,7 +88,7 @@ void example1(double& average_iter, double& cpu_time, double& infnorm_error, con
 	}
 
 	double iter_num_arr[1];
-	Time_frac_diffusion_2Deq_solver(N, level, X_L, X_R, Y_Low, Y_Upp,
+	Time_frac_diffusion_2Deq_AIMGM_solver(N, level, X_L, X_R, Y_Low, Y_Upp,
 	                                Frac_div_appro_coeff, rhs, eps, iter_num_arr, tol);
 	t2=clock();
 	delete[]Frac_div_appro_coeff;
