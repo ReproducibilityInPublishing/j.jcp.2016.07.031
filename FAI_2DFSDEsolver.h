@@ -38,7 +38,7 @@ uint_32 Vcycle_AIMGM(uint_32* M_array, uint_32 M_agrray_len,
                      complex deltaFTFC, complex* rhs, complex* sol, double tol);
 void AIMGM(uint_32* M_array, uint_32 M_array_len,
 	   double** offlaplacex, double** offlaplacey, complex** mainlaplace,
-	   complex deltaFTFC, complex** rhsides, complex** solutions);
+	   complex deltaFTFC, complex** rhsides, complex** solutions, bool isinitial);
 double Infnorm(complex* vec, uint_32 vec_len);
 void get_residual(double* offlaplacex, double* offlaplacey,
                   complex* mainlaplace, complex* right_hand_side, complex* sol, uint_32 M,
@@ -67,6 +67,18 @@ double _Pow_int(double x, int n) {
 	return answer;
 }
 
+template<typename T> inline void report_vector(T* vec, uint_32 veclen) {
+	for (uint_32 i=0;i<veclen; ++i) {
+		std::cerr << vec[i] << ", ";
+	}
+}
+
+template<> inline void report_vector<complex> (complex* vec, uint_32 veclen) {
+	for (uint_32 i=0;i<veclen; ++i) {
+		std::cerr << vec[i].r << "+i" << vec[i].i << ", ";
+	}
+}
+
 void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
                                      double X_R, double Y_Low, \
                                      double Y_Upp, double* Frac_div_appro_coeff, complex** rhs, double eps,
@@ -87,10 +99,10 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	complex* out=new complex[N];
 	uint_32 i;
 
-	std::cerr << "Deltas" << std::endl;
+	//std::cerr << "Deltas" << std::endl;
 	for (i=0; i<N; i++) {
 		Ddelta[i]=_Pow_int(delta, i);
-		std::cerr << Ddelta[i] << std::endl;
+	//	std::cerr << Ddelta[i] << std::endl;
 	}
 
 	complex* FTFDAC=new complex[N];//fourier transformation of discrete Fractional derivative coefficients
@@ -106,9 +118,9 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 
 	kiss_fft(cfg, FTFDAC, FTFDAC); //do fft for FTFDAC
 
-	std::cerr << "FTFDAC: " << std::endl;
+	//std::cerr << "FTFDAC: " << std::endl;
 	for (i=0; i<N; i++) {
-		std::cerr << FTFDAC[i].r << " + i" << FTFDAC[i].i << std::endl;
+		//std::cerr << FTFDAC[i].r << " + i" << FTFDAC[i].i << std::endl;
 		FTFDAC[i].i=-FTFDAC[i].i;
 		fin[i].i=0;
 	}
@@ -155,7 +167,7 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	iter_num_arr[0]=0;
 	//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
 	//                                mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
-	std::cerr << "First time step" << std::endl;
+	//std::cerr << "First time step" << std::endl;
 	iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
 	                              mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
 	delete[]rhs[0];
@@ -163,7 +175,7 @@ void Time_frac_diffusion_2Deq_solver(uint_32 N, uint_32 level, double X_L,
 	initialsolver=NULL;
 
 	for (i=1; i<N; i++) {
-		std::cerr << "time step i: " << i << std::endl;
+		//std::cerr << "time step i: " << i << std::endl;
 		deltaFTFC.i=FTFDAC[i].i;
 		deltaFTFC.r=FTFDAC[i].r-FTFDAC[i-1].r;
 		initialsolver=new complex[Msquare];
@@ -299,7 +311,7 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 		AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], sol, rhs,
 		               M_array[0], timepost, 0);
 		itertime++;
-		std::cerr << "Iteration! (" << itertime << ")" << std::endl;
+		//std::cerr << "Iteration! (" << itertime << ")" << std::endl;
 	}
 
 	delete[]residual;
@@ -314,35 +326,25 @@ uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
 	return itertime;
 }
 
-template<typename T> inline void report_vector(T* vec, uint_32 veclen) {
-	for (uint_32 i=0;i<veclen; ++i) {
-		std::cerr << vec[i] << ", ";
-	}
-}
-
-template<> inline void report_vector<complex> (complex* vec, uint_32 veclen) {
-	for (uint_32 i=0;i<veclen; ++i) {
-		std::cerr << vec[i].r << "+i" << vec[i].i << ", ";
-	}
-}
-
 void AIMGM(uint_32* M_array, uint_32 M_array_len,
            double** offlaplacex, double** offlaplacey, complex** mainlaplace,
-           complex** rhsides, complex** solutions) {
-	std::cerr << "AIMGM: M_array_len: " << M_array_len << std::endl;
-	std::cerr << "AIMGM: M_array: ";
+           complex** rhsides, complex** solutions, bool isinitial) {
+	//std::cerr << "AIMGM: M_array_len: " << M_array_len << std::endl;
+	//std::cerr << "AIMGM: M_array: ";
 	uint_32 Ms = M_array[0]*M_array[0];
-	report_vector(M_array, M_array_len);
-	std::cerr << std::endl;
-	std::cerr << "AIMGM: rhsides[0]: ";
-	report_vector(rhsides[0], Ms);
-	std::cerr << std::endl;
-	std::cerr << "AIMGM: solutions[0]: ";
-	report_vector(solutions[0], Ms);
-	std::cerr << std::endl;
+	//report_vector(M_array, M_array_len);
+	//std::cerr << std::endl;
+	//std::cerr << "AIMGM rhsides[0] pointer:  " << rhsides[0] << std::endl;
+	//std::cerr << "AIMGM: rhsides[0]: ";
+	//report_vector(rhsides[0], 6);
+	//std::cerr << std::endl;
+	//std::cerr << "AIMGM: solutions[0]: ";
+	//report_vector(solutions[0], 6);
+	//std::cerr << std::endl;
 
 	if (M_array[0] == 3) {
 		In_Cplt_LU_Sol(offlaplacex[0], offlaplacey[0], mainlaplace[0], rhsides[0], solutions[0]);
+		//std::cerr << "AIMGM: direct solve" << std::endl;
 		return;
 	}
 
@@ -350,27 +352,74 @@ void AIMGM(uint_32* M_array, uint_32 M_array_len,
 	uint_32 timepre=3;
 	uint_32 timepost=3;
 
+	//std::cerr << "AIMGM: ---Pre-Smoothing---" << std::endl;
+	//std::cerr << "AIMGM: solutions[0]: ";
+	//report_vector(solutions[0], 6);
+	//std::cerr << std::endl;
+	//std::cerr << "Before smoother" << std::endl;
+
 	// pre-smoothing
 	AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], solutions[0], rhsides[0],
-	               M_array[0], timepre, 0);
+	               M_array[0], timepre, isinitial?1:0);
+	//std::cerr << "After smoother" << std::endl;
+	//std::cerr << "AIMGM: rhsides[0]: ";
+	//report_vector(rhsides[0], 6);
+	//std::cerr << std::endl;
+	//std::cerr << "AIMGM: solutions[0]: ";
+	//report_vector(solutions[0], 6);
+	//std::cerr << std::endl;
+	//std::cerr << "Get Residual" << std::endl;
+
 	complex* residual=new complex[M_array[0]*M_array[0]];
 	get_residual(offlaplacex[0], offlaplacey[0], mainlaplace[0], rhsides[0], solutions[0],
 	             M_array[0], residual);
 
+	//std::cerr << "AIMGM: ---Restrict---" << std::endl;
+	//std::cerr << "AIMGM: residual: ";
+	//report_vector(residual, 6);
+	//std::cerr << std::endl;
+	//std::cerr << "AIMGM: rhsides[1]: ";
+	//report_vector(rhsides[1], 6);
+	//std::cerr << std::endl;
+	
 	//restriction
-	Restr_Operator(residual, rhsides[1], M_array[1]);
+	Restr_Operator(residual, rhsides[1], M_array[0]);
+
+	//std::cerr << "AIMGM: rhsides[1]: ";
+	//report_vector(rhsides[1], 6);
+	//std::cerr << std::endl;
 
 	delete [] residual;
 
-	//Recursive call on next layer down
-	AIMGM(M_array+1,M_array_len-1, offlaplacex+1, offlaplacey+1,mainlaplace+1,rhsides+1,solutions+1); 
+	//std::cerr << "AIMGM: solutions[1]: ";
+	//report_vector(solutions[1], 6);
+	//std::cerr << std::endl;
 
-	//interpolation (may have incorrect M_array parameter)
+	//Recursive call on next layer down
+	//std::cerr << "AIMGM: ---Start Recursive Call---" << std::endl;
+	AIMGM(M_array+1,M_array_len-1, offlaplacex+1, offlaplacey+1,mainlaplace+1,rhsides+1,solutions+1, true); 
+	//std::cerr << "AIMGM: ---End Recursive Call---" << std::endl;
+
+	//std::cerr << "AIMGM: solutions[1]: ";
+	//report_vector(solutions[1], 6);
+	//std::cerr << std::endl;
+
+	//interpolation
+	//std::cerr << "AIMGM: ---Interpolate---" << std::endl;
 	Interp_Operator(solutions[1], solutions[0], M_array[1]);
 
+	//std::cerr << "AIMGM: solutions[0]: ";
+	//report_vector(solutions[0], 6);
+	//std::cerr << std::endl;
+
 	//post smoothing
+	//std::cerr << "AIMGM: ---Post Smoothing---" << std::endl;
 	AXLGS_smoother(offlaplacex[0], offlaplacey[0], mainlaplace[0], solutions[0],
 	               rhsides[0], M_array[0], timepost, 0);
+
+	//std::cerr << "AIMGM: solutions[0]: ";
+	//report_vector(solutions[0], 6);
+	//std::cerr << std::endl;
 
 //	iszeroinital=(itertime==0?1:0);
 
@@ -420,10 +469,10 @@ void AIMGM(uint_32* M_array, uint_32 M_array_len,
 uint_32 Vcycle_AIMGM(uint_32* M_array, uint_32 M_array_len,
                      double** offlaplacex, double** offlaplacey, complex** mainlaplace,
                      complex deltaFTFC, complex* rhs, complex* sol, double tol) {
-	std::cerr << "Vcycle_AIMGM: M_array_len: " << M_array_len << std::endl;
-	std::cerr << "Vcycle_AIMGM: M_array: ";
-	report_vector(M_array, M_array_len);
-	std::cerr << std::endl;
+	//std::cerr << "Vcycle_AIMGM: M_array_len: " << M_array_len << std::endl;
+	//std::cerr << "Vcycle_AIMGM: M_array: ";
+	//report_vector(M_array, M_array_len);
+	//std::cerr << std::endl;
 	uint_32 tempMs, Ms;
 
 	// Prepare Lambda
@@ -443,39 +492,56 @@ uint_32 Vcycle_AIMGM(uint_32* M_array, uint_32 M_array_len,
 
 	rhsides[0] = rhs;
 	solutions[0] = sol;
+	//std::cerr << "Building M_array except for the first" << std::endl;
 	for (uint_32 i=1; i<M_array_len; i++) {
 		tempMs=M_array[i]*M_array[i];
+		//std::cerr << tempMs << std::endl;
 		solutions[i]=new complex[tempMs];
 		rhsides[i]=new complex[tempMs];
 	}
 
 	Ms=M_array[0]*M_array[0];
-	std::cerr << "Vcycle_AIMGM: rhs: ";
-	report_vector(rhs, Ms);
-	std::cerr << std::endl;
-	std::cerr << "Vcycle_AIMGM: sol: ";
-	report_vector(sol, Ms);
-	std::cerr << std::endl;
+	//std::cerr << "Vcycle_AIMGM: rhs: ";
+	//report_vector(rhs, Ms);
+	//std::cerr << std::endl;
+	//std::cerr << "Vcycle_AIMGM: rhsides[0] pointer: " << rhsides[0] << std::endl;
+	//std::cerr << "Vcycle_AIMGM: rhsides[0]: ";
+	//report_vector(rhsides[0], Ms);
+	//std::cerr << std::endl;
+
+	//std::cerr << "Vcycle_AIMGM: sol: ";
+	//report_vector(sol, Ms);
+	//std::cerr << std::endl;
+	//std::cerr << "Vcycle_AIMGM: solutions[0] pointer: " << solutions[0] << std::endl;
+	//std::cerr << "Vcycle_AIMGM: solutions[0]: ";
+	//report_vector(solutions[0], Ms);
+	//std::cerr << std::endl;
 
 	// Calculate the norm of r(0)
 	double normrhs = Infnorm(rhs,Ms);
+	//std::cerr << "main norm: " << normrhs << std::endl;
 	double curerror = 0;
 	uint_32 iterations = 0;
 
 	int count = 0;
-	int max = 2;
+	int max = 15;
+	bool isinitial = true;
 	do {
-		AIMGM(M_array, M_array_len, offlaplacex, offlaplacey, mainlaplace, rhsides, solutions);
-		complex* residual=new complex[M_array[0]*M_array[0]];
+		AIMGM(M_array, M_array_len, offlaplacex, offlaplacey, mainlaplace, rhsides, solutions, isinitial);
+		if(isinitial) {
+			isinitial = false;
+		}
+		complex* residual=new complex[Ms];
 		get_residual(offlaplacex[0], offlaplacey[0], mainlaplace[0], rhsides[0], solutions[0],
 		             M_array[0], residual);
 		double newnorm = Infnorm(residual, Ms);
 		curerror=newnorm/normrhs;
 		iterations += 1;
-		std::cerr << "Iteration finished(" << iterations << ")-> curerr: " << curerror << std::endl;
+		//std::cerr << "Iteration finished(" << iterations << ")-> curerr: " << curerror << std::endl;
 		count += 1;
 		delete [] residual;
 		if (count >= max) {
+			std::cerr << "Unlikely to converge.." << std::endl;
 			// Quit early
 			exit(-1);
 		}
@@ -1045,6 +1111,7 @@ inline void AXLGS_smoother(double* offlaplacex, double* offlaplacey,
 	complex* temprhs=new complex[M];
 
 	if (iszeroinitial) {
+		//std::cerr << "smoother called with zero initial" << std::endl;
 		ntime-=1;
 
 		for (j=1; j<Mm1; j+=2) {
