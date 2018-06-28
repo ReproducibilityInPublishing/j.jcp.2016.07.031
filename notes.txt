@@ -26,6 +26,10 @@ Reading paper and background to understand what the paper is trying to do.
 
 +30 mins (didn't capture the time)
 
++3 hrs (didn't capture the time
+
+20:12:00 (+~7hrs 15mins): I've reimplemented AIMGM to match the algorithm in the paper. With -O3, our implementation is actually slightly faster, but that might be because of hardware platform. Error is also very close with in 1-2% for all values tested.
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
@@ -61,3 +65,7 @@ Now that the code is in a more modular form which doesn't require re-compilation
 I have been suspecting that the multigrid method given to us in code is not the same as that used in the article. the multigrid function is called 'Vcycle_BLTDTDB' which does not match any description in the article we were sent, and which was supposed to be showing off the 'AIMGM' method. Out of curiosity, I had a look at other articles by these authors, None published recently seem to show off the method assuming the function name is an accurate description they would use in an article. A quick google search and google scholar search turned up no results for the BLTDTDB method.
 
 I've mostly reimplemented their multigrid algorithm from the pieces they have left. I've now got something which takes twice as long but gets slightly better error values sometimes. There's a section in the paper discussing how only half the systems need to be calculated, while all of the systems are calculated in the code. I'm now attempting to implement this halfing.
+
+I'm now going to see whether their AXLGS smoother differs appreciably from the ZLGS smoother mentioned in the paper.
+
+Just completed a full replication of the AIMGM numbers in the article, they are mostly a little different, between 1-5% different, 60% are actually better (less error). But one is 20% worse than the article.
