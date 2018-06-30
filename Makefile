@@ -1,6 +1,6 @@
 all: example1 example2 example3
 
-CXXFLAGS := -g -O3
+CXXFLAGS := -g -O3 --std=c++11
 
 argument_parser.o: argument_parser.cpp
 	g++ ${CXXFLAGS} -c $< -o $@
