@@ -1,1 +1,5 @@
 *.o
+*.csv
+example1
+example2
+example3
