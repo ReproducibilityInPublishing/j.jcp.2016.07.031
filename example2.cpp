@@ -4,6 +4,7 @@
 #include <time.h>
 #include <iomanip>
 #include <cmath>
+#include "example2.h"
 double inf_norm_real(double* vec, uint_32 veclen);
 
 void example2(double& average_iter, double& cpu_time, double& infnorm_error, const uint_32 level, const uint_32 N, const double X_L, const double X_R, const double Y_Low, const double Y_Upp, const double T, const double alpha, const double eps, const double tol) {
