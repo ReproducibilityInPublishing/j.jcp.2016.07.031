@@ -69,3 +69,5 @@ I've mostly reimplemented their multigrid algorithm from the pieces they have le
 I'm now going to see whether their AXLGS smoother differs appreciably from the ZLGS smoother mentioned in the paper.
 
 Just completed a full replication of the AIMGM numbers in the article, they are mostly a little different, between 1-5% different, 60% are actually better (less error). But one is 20% worse than the article.
+
+Spent 3 days reading 'Numerical Partial Differential Equations: Finite Difference Methods' to get a better idea of the field. I now think I can tackle the BD-ADI method.
