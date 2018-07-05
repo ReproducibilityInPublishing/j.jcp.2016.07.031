@@ -336,6 +336,7 @@ void Time_frac_diffusion_2Deq_BFSMGM_solver(uint_32 N, uint_32 level, double X_L
 	delete[]offlaplacex;
 	delete[]offlaplacey;
 	delete[]mainlaplace;
+	delete[]M_array;
 
 	std::cerr << "FAIsolver finished" << std::endl;
 	iter_num_arr[0]/=(double)num_calcs;
@@ -840,6 +841,10 @@ complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
 		oneovreh1s=1.0/(h1*h1);
 		Mm1=M-1;
 		mainlaplace[m]=new complex[M*M];
+		for(uint_32 k=0; k < M*M; ++k) {
+			mainlaplace[m][k].r = 0.;
+			mainlaplace[m][k].i = 0.;
+		}
 		Mm2=M-2;
 		xp1=X_L+h1;
 		yp1=Y_Low+h2;
