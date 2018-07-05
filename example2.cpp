@@ -105,7 +105,7 @@ void example2(double& average_iter, double& cpu_time, double& infnorm_error, con
 		}
 	}
 
-	double iter_num_arr[1];
+	double iter_num_arr = 0.;
 	Time_frac_diffusion_2Deq_AIMGM_solver(N, level, X_L, X_R, Y_Low, Y_Upp,
 	                                      Frac_div_appro_coeff, rhs, eps, iter_num_arr, tol);
 	t2=clock();
@@ -129,8 +129,8 @@ void example2(double& average_iter, double& cpu_time, double& infnorm_error, con
 		}
 	}
 
-	average_iter = iter_num_arr[0];
-	//std::cerr<<"averageiter: "<<iter_num_arr[0]<<std::endl;
+	average_iter = iter_num_arr;
+	//std::cerr<<"averageiter: "<<iter_num_arr<<std::endl;
 	error=max/norm1;
 	infnorm_error = error;
 	//std::cerr.setf(std::ios::scientific);
