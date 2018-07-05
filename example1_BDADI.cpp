@@ -113,6 +113,11 @@ void example1_BDADI(double& cpu_time, double& infnorm_error, const uint_32 level
 		f[n]=new double[Ms];
 		u[n]=new double[Ms];
 
+		for(uint_32 i=0; i<Ms; ++i) {
+			f[n][i] = 0.;
+			u[n][i] = 0.;
+		}
+
 		for (uint_32 j=0; j<Mp2; ++j) {
 			uint_32 indy=j*Mp2;
 
@@ -247,9 +252,9 @@ void example1_BDADI(double& cpu_time, double& infnorm_error, const uint_32 level
 		t=(n+1)*tau;
 		ts=t*t;
 
-		for (uint_32 j=1; j<Mp2-1; ++j) {
+		for (uint_32 j=0; j<Mp2; ++j) {
 			uint_32 indy = j*Mp2;
-			for(uint_32 i=1; i<Mp2-1; ++i) {
+			for(uint_32 i=0; i<Mp2; ++i) {
 				tempsolver[indy+i]=u[n][indy+i]-ts*exactsol[indy+i];
 			}
 		}
@@ -268,11 +273,14 @@ void example1_BDADI(double& cpu_time, double& infnorm_error, const uint_32 level
 
 	delete[]exactsol;
 	delete[]tempsolver;
+	delete[] ak;
 
 	for (uint_32 i=0; i<N; i++) {
 		delete [] u[i];
 		delete [] f[i];
 	}
+	delete [] u;
+	delete [] f;
 	delete [] u_star;
 	delete [] b;
 	delete [] u_star_oj;

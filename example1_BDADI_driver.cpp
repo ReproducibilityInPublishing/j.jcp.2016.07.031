@@ -25,8 +25,8 @@ int main(int argc, char** argv) {
 		return s;
 	}
 
-	double cpu_time;
-	double infnorm_error;
+	double cpu_time = 0.;
+	double infnorm_error = 0.;
 	example1_BDADI(cpu_time, infnorm_error, level, N, X_L, X_R, Y_Low, Y_Upp, T, alpha, eps, tol);
 
 	std::cerr << "Driver parameter summary" << std::endl;

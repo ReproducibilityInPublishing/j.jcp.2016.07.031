@@ -30,6 +30,10 @@ Reading paper and background to understand what the paper is trying to do.
 
 20:12:00 (+~7hrs 15mins): I've reimplemented AIMGM to match the algorithm in the paper. With -O3, our implementation is actually slightly faster, but that might be because of hardware platform. Error is also very close with in 1-2% for all values tested.
 
+30:50:00: (+~15 hrs) I've implemented the BD-ADI algorithm by following the cited paper. I get exactly the same error levels they report, but different performance. This is likely down to choices in implementation.
+
+~46 hrs
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
@@ -71,3 +75,7 @@ I'm now going to see whether their AXLGS smoother differs appreciably from the Z
 Just completed a full replication of the AIMGM numbers in the article, they are mostly a little different, between 1-5% different, 60% are actually better (less error). But one is 20% worse than the article.
 
 Spent 3 days reading 'Numerical Partial Differential Equations: Finite Difference Methods' to get a better idea of the field. I now think I can tackle the BD-ADI method.
+
+Successfully implemented BD-ADI after stepping through the algorithm by hand, and verifying that the correct computation was taking place with print statements.
+
+My implementation actually is more performant at larger grid sizes than theirs, slow at small grid sizes. This may be down to matrix inversion method, however I am not interested in trying to optimize this method any further.
