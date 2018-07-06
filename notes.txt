@@ -38,6 +38,8 @@ Reading paper and background to understand what the paper is trying to do.
 
 32:45:00 Created short versions of the various table tests
 
+33:00:00 Fixed Argparse header file
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
