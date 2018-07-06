@@ -22,11 +22,11 @@ double postv_func(double x, double y);
 void Time_frac_diffusion_2Deq_AIMGM_solver(uint_32 N, uint_32 level, double X_L,
                                            double X_R, double Y_Low, \
                                            double Y_Upp, double* Frac_div_appro_coeff, complex** rhs, double eps,
-                                           double iter_num_arr[1], double tol);
+                                           double& iter_num_arr, double tol);
 void Time_frac_diffusion_2Deq_BFSMGM_solver(uint_32 N, uint_32 level, double X_L,
                                            double X_R, double Y_Low, \
                                            double Y_Upp, double* Frac_div_appro_coeff, complex** rhs,
-                                           double iter_num_arr[1], double tol);
+                                           double& iter_num_arr, double tol);
 double** offlaplacex_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
                               double X_R, double Y_Low, double Y_Upp);
 double** offlaplacey_generate(uint_32* M_array, uint_32 M_array_len, double X_L,
@@ -89,7 +89,7 @@ template<> inline void report_vector<complex> (complex* vec, uint_32 veclen) {
 void Time_frac_diffusion_2Deq_AIMGM_solver(uint_32 N, uint_32 level, double X_L,
                                      double X_R, double Y_Low, \
                                      double Y_Upp, double* Frac_div_appro_coeff, complex** rhs, double eps,
-                                     double iter_num_arr[1], double tol) {
+                                     double& iter_num_arr, double tol) {
 	if(level<2) {
 		std::cerr<<"FAIsolver warning: level="<<level<<"is too small "<<std::endl;
 	}
@@ -172,11 +172,11 @@ void Time_frac_diffusion_2Deq_AIMGM_solver(uint_32 N, uint_32 level, double X_L,
 		initialsolver[i].i = 0.;
 	}
 	int num_calcs = 0;
-	iter_num_arr[0]=0;
-	//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
+	iter_num_arr=0;
+	//iter_num_arr+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
 	//                                mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
 	//std::cerr << "First time step" << std::endl;
-	iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
+	iter_num_arr+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
 	                              mainlaplace, deltaFTFC, rhs[0], initialsolver, tol);
 	num_calcs += 1;
 	delete[]rhs[0];
@@ -197,9 +197,9 @@ void Time_frac_diffusion_2Deq_AIMGM_solver(uint_32 N, uint_32 level, double X_L,
 				initialsolver[j].i = 0.;
 			}
 	
-			//iter_num_arr[0]+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
+			//iter_num_arr+=Vcycle_BLTDTDB(M_array, M_array_len, offlaplacex, offlaplacey,
 			//                                mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
-			iter_num_arr[0]+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
+			iter_num_arr+=Vcycle_AIMGM(M_array, M_array_len, offlaplacex, offlaplacey,
 			                              mainlaplace, deltaFTFC, rhs[i], initialsolver, tol);
 			num_calcs += 1;
 			delete[]rhs[i];
@@ -243,13 +243,14 @@ void Time_frac_diffusion_2Deq_AIMGM_solver(uint_32 N, uint_32 level, double X_L,
 	kiss_fft_free(cfg);
 	delete[]Ddelta;
 	std::cerr << "FAIsolver finished" << std::endl;
-	iter_num_arr[0]/=(double)num_calcs;
+	iter_num_arr/=(double)num_calcs;
+	delete[] M_array;
 }
 
 void Time_frac_diffusion_2Deq_BFSMGM_solver(uint_32 N, uint_32 level, double X_L,
                                             double X_R, double Y_Low, \
                                             double Y_Upp, double* Frac_div_appro_coeff, complex** rhs,
-                                            double iter_num_arr[1], double tol) {
+                                            double& iter_num_arr, double tol) {
 	if(level<2) {
 		std::cerr<<"FAIsolver warning: level="<<level<<"is too small "<<std::endl;
 	}
@@ -294,8 +295,8 @@ void Time_frac_diffusion_2Deq_BFSMGM_solver(uint_32 N, uint_32 level, double X_L
 		initialsolver[i].i = 0.;
 	}
 	int num_calcs = 0;
-	iter_num_arr[0]=0;
-	iter_num_arr[0]+=MGMManager(M_array, M_array_len, offlaplacex, offlaplacey,
+	iter_num_arr=0;
+	iter_num_arr+=MGMManager(M_array, M_array_len, offlaplacex, offlaplacey,
 	                            mainlaplace, rhs[0], initialsolver, tol);
 	num_calcs += 1;
 	delete[]rhs[0];
@@ -319,7 +320,7 @@ void Time_frac_diffusion_2Deq_BFSMGM_solver(uint_32 N, uint_32 level, double X_L
 			initialsolver[j].i = 0.;
 		}
 
-		iter_num_arr[0]+=MGMManager(M_array, M_array_len, offlaplacex, offlaplacey,
+		iter_num_arr+=MGMManager(M_array, M_array_len, offlaplacex, offlaplacey,
 		                            mainlaplace, rhs[i], initialsolver, tol);
 		num_calcs += 1;
 		delete[]rhs[i];
@@ -336,9 +337,10 @@ void Time_frac_diffusion_2Deq_BFSMGM_solver(uint_32 N, uint_32 level, double X_L
 	delete[]offlaplacex;
 	delete[]offlaplacey;
 	delete[]mainlaplace;
+	delete[]M_array;
 
 	std::cerr << "FAIsolver finished" << std::endl;
-	iter_num_arr[0]/=(double)num_calcs;
+	iter_num_arr/=(double)num_calcs;
 }
 
 uint_32 Vcycle_BLTDTDB(uint_32* M_array, uint_32 M_agrray_len,
@@ -840,6 +842,10 @@ complex** mainlaplace_generate(uint_32* M_array, uint_32 M_array_len,
 		oneovreh1s=1.0/(h1*h1);
 		Mm1=M-1;
 		mainlaplace[m]=new complex[M*M];
+		for(uint_32 k=0; k < M*M; ++k) {
+			mainlaplace[m][k].r = 0.;
+			mainlaplace[m][k].i = 0.;
+		}
 		Mm2=M-2;
 		xp1=X_L+h1;
 		yp1=Y_Low+h2;

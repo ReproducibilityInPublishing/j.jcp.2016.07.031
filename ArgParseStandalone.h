@@ -17,7 +17,7 @@
 #ifdef ARGPARSE_VERSION
 #error "Please only include one version of ArgParse."
 #endif
-#define ARGPARSE_VERSION 0.8.0
+#define ARGPARSE_VERSION 0.8.2
 
 #ifndef ARGPARSE_Message_HDR
 #define ARGPARSE_Message_HDR
@@ -1184,7 +1184,6 @@ namespace ArgParse {
 #ifndef ARGPARSE_ArgInclusiveGroup_HDR
 #define ARGPARSE_ArgInclusiveGroup_HDR
 
-#include "ArgParse/ArgGroup.h"
 
 namespace ArgParse {
 	class ArgInclusiveGroup : public ArgGroup {
@@ -1296,7 +1295,6 @@ namespace ArgParse {
 		return true;
 	}
 }
-#include "ArgParse/ArgObject.h"
 
 namespace ArgParse {
 	const ArgObject::Mode_t ArgObject::Single = 0;
@@ -1388,11 +1386,6 @@ namespace ArgParse {
 		}
 	}
 }
-#include "ArgParse/Message.h"
-#include "ArgParse/ArgObjContainer.h"
-#include "ArgParse/ArgGroup.h"
-#include "ArgParse/ArgInclusiveGroup.h"
-#include "ArgParse/ArgExclusiveGroup.h"
 
 namespace ArgParse {
 	ArgObjContainer::~ArgObjContainer() {
@@ -1460,8 +1453,6 @@ namespace ArgParse {
 #include <sstream>
 #include <cstring>
 
-#include "ArgParse/ArgParser.h"
-#include "ArgParse/Message.h"
 
 namespace ArgParse {
 	ArgParser::ArgParser(const std::string& help_intro) : ArgObjContainer() {
@@ -1777,7 +1768,6 @@ namespace ArgParse {
 }
 #include <cstring>
 
-#include "ArgParse/Utilities.h"
 
 namespace ArgParse {
 	const char* basename(const char* filename) {
@@ -1787,8 +1777,6 @@ namespace ArgParse {
 }
 #include <sstream>
 
-#include "ArgParse/Message.h"
-#include "ArgParse/ArgGroup.h"
 
 namespace ArgParse {
 	bool ArgGroup::IsConfigured() const {

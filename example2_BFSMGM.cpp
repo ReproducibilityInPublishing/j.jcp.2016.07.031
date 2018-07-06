@@ -104,8 +104,11 @@ void example2_BFSMGM(double& average_iter, double& cpu_time, double& infnorm_err
 			rhs[n][Mmmm1+i].r+=(oneoh2syu*postv_func(mh1, y_e)*tq*mh1);
 		}
 	}
+	delete [] expxy;
+	delete [] xarry;
+	delete [] yarray;
 
-	double iter_num_arr[1];
+	double iter_num_arr = 0.;
 	Time_frac_diffusion_2Deq_BFSMGM_solver(N, level, X_L, X_R, Y_Low, Y_Upp,
 	                                       Frac_div_appro_coeff, rhs, iter_num_arr, tol);
 	t2=clock();
@@ -129,8 +132,8 @@ void example2_BFSMGM(double& average_iter, double& cpu_time, double& infnorm_err
 		}
 	}
 
-	average_iter = iter_num_arr[0];
-	//std::cerr<<"averageiter: "<<iter_num_arr[0]<<std::endl;
+	average_iter = iter_num_arr;
+	//std::cerr<<"averageiter: "<<iter_num_arr<<std::endl;
 	error=max/norm1;
 	infnorm_error = error;
 	//std::cerr.setf(std::ios::scientific);
@@ -152,6 +155,7 @@ void example2_BFSMGM(double& average_iter, double& cpu_time, double& infnorm_err
 	for (i=0; i<N; i++) {
 		delete[]rhs[i];
 	}
+	delete [] rhs;
 }
 double inf_norm_real(double* vec, uint_32 veclen) {
 	double max=fabs(vec[0]);
