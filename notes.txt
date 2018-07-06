@@ -30,9 +30,13 @@ Reading paper and background to understand what the paper is trying to do.
 
 20:12:00 (+~7hrs 15mins): I've reimplemented AIMGM to match the algorithm in the paper. With -O3, our implementation is actually slightly faster, but that might be because of hardware platform. Error is also very close with in 1-2% for all values tested.
 
-30:50:00: (+~15 hrs) I've implemented the BD-ADI algorithm by following the cited paper. I get exactly the same error levels they report, but different performance. This is likely down to choices in implementation.
+30:50:00: (+~15 hrs) [total ~46 hrs] I've implemented the BD-ADI algorithm by following the cited paper. I get exactly the same error levels they report, but different performance. This is likely down to choices in implementation.
 
-~46 hrs
+31:50:00: Fixed memory errors reported by valgrind in example1_BDADI
+
+32:30:00 Completed fix of memory errors reported by valgrind in all examples
+
+32:45:00 Created short versions of the various table tests
 
 --- Notes ---
 
