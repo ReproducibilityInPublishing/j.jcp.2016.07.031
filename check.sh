@@ -11,7 +11,7 @@ for i in 1 2 3 4; do
         expected=$(echo ${l} | cut -d$'\t' -f2)
         # Fail if last column does not match
         if [[ $(diff <(echo ${actual} | cut -d',' -f13) <(echo ${expected} | cut -d',' -f13)) != "" ]]; then
-            echo "Table ${i} Row ${rownum}: FAIL"
+            echo "Table ${i} ROW ${rownum}: FAIL"
         else
             echo "Table ${i} ROW ${rownum}: PASS"
         fi
