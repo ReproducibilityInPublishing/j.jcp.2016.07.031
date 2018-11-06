@@ -1,0 +1,13 @@
+0h51m: Successfully ran table1.sh, meaning could build and run code for example1, getting some results
+1h07m: Successfully made a Docker image based on Ubuntu 16.04 that can run table1.sh
+1h43m: Successfully configured Docker image on Ubuntu 16.04 to run all tables (counting running time for generating all tables)
+1h48m: Started run with Docker image on Centos 7 to run all tables
+2h16m: Finished run with Docker image on Centos 7 to run all tables
+2h44m: Ported code over to Visual Studio to try Visual C++ compiler, numbers for Table 1 are similar but there are differences in last 1-2 decimal places
+2h47m: Pulled new changes that also compares against the other technique, built new image ready to run
+3h02m: Fixed some small bugs in script, now starting the experiment
+5h08m: Stopped the watch, partway through still waiting for experiment, will add the time at the end for the full experiment run...
+       - Took 229 minutes
+7h03m: Playing with running scripts through Visual Studio C++, and with running icc
+11h57m: Rerunning again to get full experiment run with updated scripts (295 minutes to run)
+12h15m: Adding in script that does the checking against expected tables
