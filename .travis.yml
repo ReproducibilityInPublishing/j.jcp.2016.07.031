@@ -1,0 +1,13 @@
+sudo: true
+
+dist: xenial
+
+before_install:
+        - sudo apt-get -y update
+        - sudo apt-get -y install build-essential
+
+install:
+        - make
+
+script:
+        - ./example1 -l 9 -a 0.1666667 -N 8
