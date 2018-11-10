@@ -104,6 +104,11 @@ Table 4
 
 33:00:00 Fixed Argparse header file
 
+Reset Timer!
+
+00:00:00: Trying to get travis running for this repo.
+00:03:00: Simple travis is now running.
+
 --- Notes ---
 
 AIM: Appoximate Inversion Method
