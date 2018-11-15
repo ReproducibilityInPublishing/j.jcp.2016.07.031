@@ -4,11 +4,16 @@ sudo: true
 
 dist: xenial
 
+compiler:
+        - gcc
+        - clang
+
 stages:
         - smoke-test
 
 matrix:
         include:
+                ## Xenial/GCC
                 # Smoke tests
                 - env:
                         - TARGET=smoke
