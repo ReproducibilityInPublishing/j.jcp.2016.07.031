@@ -11,6 +11,11 @@ matrix:
         include:
                 - env:
                         - TARGET=smoke
+                        - TABLE=1
+                  stage: smoke-test
+                - env:
+                        - TARGET=smoke
+                        - TABLE=2
                   stage: smoke-test
 
 before_install:
@@ -21,4 +26,4 @@ install:
         - make
 
 script:
-        - ./travis/travis_${TARGET}_test.sh
+        - ./travis/travis_${TARGET}_test.sh ${TABLE}
