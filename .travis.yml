@@ -9,6 +9,7 @@ stages:
 
 matrix:
         include:
+                # Smoke tests
                 - env:
                         - TARGET=smoke
                         - TABLE=1
@@ -25,6 +26,23 @@ matrix:
                         - TARGET=smoke
                         - TABLE=4
                   stage: smoke-test
+                # Main tests
+                - env:
+                        - TARGET=main
+                        - TABLE=1
+                  stage: main-test
+                - env:
+                        - TARGET=main
+                        - TABLE=2
+                  stage: main-test
+                - env:
+                        - TARGET=main
+                        - TABLE=3
+                  stage: main-test
+                - env:
+                        - TARGET=main
+                        - TABLE=4
+                  stage: main-test
 
 before_install:
         - sudo apt-get -y update
