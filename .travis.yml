@@ -17,6 +17,14 @@ matrix:
                         - TARGET=smoke
                         - TABLE=2
                   stage: smoke-test
+                - env:
+                        - TARGET=smoke
+                        - TABLE=3
+                  stage: smoke-test
+                - env:
+                        - TARGET=smoke
+                        - TABLE=4
+                  stage: smoke-test
 
 before_install:
         - sudo apt-get -y update
