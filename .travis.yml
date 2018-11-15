@@ -10,6 +10,8 @@ compiler:
 
 stages:
         - smoke-test
+        - main-test
+        - extended-test
 
 matrix:
         include:
@@ -48,6 +50,23 @@ matrix:
                         - TARGET=main
                         - TABLE=4
                   stage: main-test
+                # Extended tests
+                - env:
+                        - TARGET=extended
+                        - TABLE=1
+                  stage: extended-test
+                - env:
+                        - TARGET=extended
+                        - TABLE=2
+                  stage: extended-test
+                - env:
+                        - TARGET=extended
+                        - TABLE=3
+                  stage: extended-test
+                - env:
+                        - TARGET=extended
+                        - TABLE=4
+                  stage: extended-test
 
 before_install:
         - sudo apt-get -y update
@@ -57,4 +76,4 @@ install:
         - make
 
 script:
-        - ./travis/travis_${TARGET}_test.sh ${TABLE}
+        - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE}
