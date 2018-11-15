@@ -2,6 +2,14 @@ sudo: true
 
 dist: xenial
 
+stages:
+        - smoke-test
+
+matrix:
+        - include:
+                - env: TARGET=smoke
+                  stage: smoke-test
+
 before_install:
         - sudo apt-get -y update
         - sudo apt-get -y install build-essential
@@ -10,4 +18,4 @@ install:
         - make
 
 script:
-        - ./example1 -l 9 -a 0.1666667 -N 8
+        - ./travis/travis_${TARGET}_test.sh
