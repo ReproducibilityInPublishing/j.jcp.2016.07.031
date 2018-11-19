@@ -76,4 +76,4 @@ install:
         - make
 
 script:
-        - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE}
+        - travis_wait 180 ./travis/travis_${TARGET}_test.sh ${TABLE}
