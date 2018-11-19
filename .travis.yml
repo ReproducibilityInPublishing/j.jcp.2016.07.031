@@ -10,8 +10,8 @@ compiler:
 
 stages:
         - smoke-test
-        - main-test
-        - extended-test
+        #- main-test
+        #- extended-test
 
 matrix:
         include:
@@ -34,39 +34,39 @@ matrix:
                         - TABLE=4
                   stage: smoke-test
                 # Main tests
-                - env:
-                        - TARGET=main
-                        - TABLE=1
-                  stage: main-test
-                - env:
-                        - TARGET=main
-                        - TABLE=2
-                  stage: main-test
-                - env:
-                        - TARGET=main
-                        - TABLE=3
-                  stage: main-test
-                - env:
-                        - TARGET=main
-                        - TABLE=4
-                  stage: main-test
+                #- env:
+                #        - TARGET=main
+                #        - TABLE=1
+                #  stage: main-test
+                #- env:
+                #        - TARGET=main
+                #        - TABLE=2
+                #  stage: main-test
+                #- env:
+                #        - TARGET=main
+                #        - TABLE=3
+                #  stage: main-test
+                #- env:
+                #        - TARGET=main
+                #        - TABLE=4
+                #  stage: main-test
                 # Extended tests
-                - env:
-                        - TARGET=extended
-                        - TABLE=1
-                  stage: extended-test
-                - env:
-                        - TARGET=extended
-                        - TABLE=2
-                  stage: extended-test
-                - env:
-                        - TARGET=extended
-                        - TABLE=3
-                  stage: extended-test
-                - env:
-                        - TARGET=extended
-                        - TABLE=4
-                  stage: extended-test
+                #- env:
+                #        - TARGET=extended
+                #        - TABLE=1
+                #  stage: extended-test
+                #- env:
+                #        - TARGET=extended
+                #        - TABLE=2
+                #  stage: extended-test
+                #- env:
+                #        - TARGET=extended
+                #        - TABLE=3
+                #  stage: extended-test
+                #- env:
+                #        - TARGET=extended
+                #        - TABLE=4
+                #  stage: extended-test
 
 before_install:
         - sudo apt-get -y update
@@ -75,5 +75,11 @@ before_install:
 install:
         - make
 
+env:
+        - TARGET=smoke; TABLE=1
+        - TARGET=smoke; TABLE=2
+        - TARGET=smoke; TABLE=3
+        - TARGET=smoke; TABLE=4
+
 script:
-        - travis_wait 180 ./travis/travis_${TARGET}_test.sh ${TABLE}
+        - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE}
