@@ -9,12 +9,13 @@ CC := gcc
 endif
 
 CXXFLAGS := -g -O3 --std=c++11
+CCFLAGS := -g -O3
 
 argument_parser.o: argument_parser.cpp
 	${CXX} ${CXXFLAGS} -c $< -o $@
 
 kiss_fft.o: kiss_fft.c
-	${CC} ${CXXFLAGS} -c $< -o $@
+	${CC} ${CCFLAGS} -c $< -o $@
 
 reporter.o: reporter.cpp
 	${CXX} ${CXXFLAGS} -c $< -o $@
