@@ -6,7 +6,6 @@ dist:
         - precise
         - trusty
         - xenial
-        - bionic
 
 compiler:
         - gcc
