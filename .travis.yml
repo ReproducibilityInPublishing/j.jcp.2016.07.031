@@ -2,10 +2,7 @@ language: cpp
 
 sudo: true
 
-dist:
-        - precise
-        - trusty
-        - xenial
+dist: xenial
 
 compiler:
         - gcc
