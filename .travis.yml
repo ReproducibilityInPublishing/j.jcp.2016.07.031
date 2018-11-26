@@ -76,10 +76,17 @@ install:
         - make
 
 env:
-        - TARGET=smoke; TABLE=1
-        - TARGET=smoke; TABLE=2
-        - TARGET=smoke; TABLE=3
-        - TARGET=smoke; TABLE=4
+        - TARGET=smoke; TABLE=1; PAPER=1
+        - TARGET=smoke; TABLE=2; PAPER=1
+        - TARGET=smoke; TABLE=3; PAPER=1
+        - TARGET=smoke; TABLE=4; PAPER=1
+        - TARGET=smoke; TABLE=1; PAPER=0
+        - TARGET=smoke; TABLE=2; PAPER=0
+        - TARGET=smoke; TABLE=3; PAPER=0
+        - TARGET=smoke; TABLE=4; PAPER=0
+
+allow_failures:
+        - PAPER=1
 
 script:
         - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE}
