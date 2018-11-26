@@ -67,6 +67,9 @@ matrix:
                 #        - TARGET=extended
                 #        - TABLE=4
                 #  stage: extended-test
+        allow_failures:
+                - env: PAPER=1
+
 
 before_install:
         - sudo apt-get -y update
@@ -85,8 +88,5 @@ env:
         - TARGET=smoke; TABLE=3; PAPER=0
         - TARGET=smoke; TABLE=4; PAPER=0
 
-allow_failures:
-        - PAPER=1
-
 script:
-        - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE}
+        - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE} ${PAPER}
