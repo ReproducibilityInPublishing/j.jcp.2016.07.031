@@ -14,7 +14,7 @@ export -f round
 IFS=$'\n'
 rownum=1    # Keep track of rows
 exitcode=0  # Keep track of error code for reporting final failure or not
-for l in $(paste <(grep -v AIMGM ${computed_file} | grep -v BD-ADI) <(grep -v AIMGM ${expected_file} | grep -v BD-ADI)); do
+for l in $(paste <(grep -v AIMGM ${computed_file} | grep -v BD-ADI | grep -v BFSMGM) <(grep -v AIMGM ${expected_file} | grep -v BD-ADI | grep -v BFSMGM)); do
     # Do separate diff for each row (treat each row as a test)
     actual=$(echo ${l} | cut -d$'\t' -f1)
     expected=$(echo ${l} | cut -d$'\t' -f2)
