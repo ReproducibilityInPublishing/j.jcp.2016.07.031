@@ -73,7 +73,7 @@ matrix:
                 #  stage: extended-test
         global:
                 - TARGET=smoke
-        matrix:
+        env:
                 - TABLE=1 PAPER=0
                 - TABLE=2 PAPER=0
                 - TABLE=3 PAPER=0
