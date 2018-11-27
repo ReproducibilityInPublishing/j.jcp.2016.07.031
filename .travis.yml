@@ -13,6 +13,19 @@ stages:
         #- main-test
         #- extended-test
 
+env:
+        global:
+                - TARGET=smoke
+        matrix:
+                - TABLE=1 PAPER=0
+                - TABLE=2 PAPER=0
+                - TABLE=3 PAPER=0
+                - TABLE=4 PAPER=0
+                - TABLE=1 PAPER=1
+                - TABLE=2 PAPER=1
+                - TABLE=3 PAPER=1
+                - TABLE=4 PAPER=1
+
 matrix:
         include:
                 ## Xenial/GCC
@@ -71,17 +84,6 @@ matrix:
                 #        - TARGET=extended
                 #        - TABLE=4
                 #  stage: extended-test
-        global:
-                - TARGET=smoke
-        env:
-                - TABLE=1 PAPER=0
-                - TABLE=2 PAPER=0
-                - TABLE=3 PAPER=0
-                - TABLE=4 PAPER=0
-                - TABLE=1 PAPER=1
-                - TABLE=2 PAPER=1
-                - TABLE=3 PAPER=1
-                - TABLE=4 PAPER=1
         allow_failures:
                 - env: TABLE=1 PAPER=1
                 - env: TABLE=2 PAPER=1
