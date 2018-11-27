@@ -20,18 +20,22 @@ matrix:
                 - env:
                         - TARGET=smoke
                         - TABLE=1
+                        - PAPER=0
                   stage: smoke-test
                 - env:
                         - TARGET=smoke
                         - TABLE=2
+                        - PAPER=0
                   stage: smoke-test
                 - env:
                         - TARGET=smoke
                         - TABLE=3
+                        - PAPER=0
                   stage: smoke-test
                 - env:
                         - TARGET=smoke
                         - TABLE=4
+                        - PAPER=0
                   stage: smoke-test
                 # Main tests
                 #- env:
@@ -67,9 +71,22 @@ matrix:
                 #        - TARGET=extended
                 #        - TABLE=4
                 #  stage: extended-test
+        global:
+                - TARGET=smoke
+        matrix:
+                - TABLE=1 PAPER=0
+                - TABLE=2 PAPER=0
+                - TABLE=3 PAPER=0
+                - TABLE=4 PAPER=0
+                - TABLE=1 PAPER=1
+                - TABLE=2 PAPER=1
+                - TABLE=3 PAPER=1
+                - TABLE=4 PAPER=1
         allow_failures:
-                - env: PAPER=1
-
+                - env: TABLE=1 PAPER=1
+                - env: TABLE=2 PAPER=1
+                - env: TABLE=3 PAPER=1
+                - env: TABLE=4 PAPER=1
 
 before_install:
         - sudo apt-get -y update
@@ -77,16 +94,6 @@ before_install:
 
 install:
         - make
-
-env:
-        - TARGET=smoke; TABLE=1; PAPER=1
-        - TARGET=smoke; TABLE=2; PAPER=1
-        - TARGET=smoke; TABLE=3; PAPER=1
-        - TARGET=smoke; TABLE=4; PAPER=1
-        - TARGET=smoke; TABLE=1; PAPER=0
-        - TARGET=smoke; TABLE=2; PAPER=0
-        - TARGET=smoke; TABLE=3; PAPER=0
-        - TARGET=smoke; TABLE=4; PAPER=0
 
 script:
         - travis_wait ./travis/travis_${TARGET}_test.sh ${TABLE} ${PAPER}
