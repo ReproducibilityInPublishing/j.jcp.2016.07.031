@@ -1,27 +1,69 @@
 # A fast accurate approximation method with multigrid solver for two-dimensional fractional sub-diffusion equation
 
-The authors of [A fast accurate approximation method with multigrid solver for two-dimensional fractional sub-diffusion equation](https://dx.doi.org/10.1016/j.jcp.2016.07.031) Xue-lei Lin, Xin Lu, Micheal K. Ng, and Hai-Wei Sun were kind enough to share the code they used for their computational experiments with us. If you use this code please be sure to cite their work. You can use the bibtex citation in `cite.bib` or you can use the citation below:
+"A fast accurate approximation method with multigrid solver for two-dimensional
+fractional sub-diffusion equation" implements an approximate solution method
+for the fractional sub-diffusion equation. At each solution step, a large
+dimensional array has to be inverted to get the next step. For each inversion,
+a multigrid method is used to reduce the dimensionality of the matrix in
+question. Then an approximate inversion equation is applied when the
+dimensionality becomes small enough. After inversion, the solution is
+interpolated back to the full dimensionality. 
 
-Xue-lei Lin, Xin Lu, Micheal K. Ng, and Hai-Wei Sun "A fast accurate approximation method with multigrid solver for two-dimensional fractional sub-diffusion equation", Journal of Computational Physics, 323, 204-218, 2016
+## Build Instructions
 
-## Docker
+### Requirements
+Instructions were tested using Docker version 18.06.0-ce, build 0ffa825, on Ubuntu 16.04.5 LTS.
 
-To build the docker image, go into the root directory and run:
+### Building with Docker
+    docker build -t ${DOCKER_IMAGE_NAME} .
 
-docker build -t multigrid:fresh .   # This makes the image with the name multigrid, with version fresh
+## Run Instructions
 
-To run the experiment scripts in the docker image, run:
+### Running with Docker
+To start a container for the Docker image:
 
-docker run -it -v $(pwd):/Scratch multigrid:fresh
+    docker run -it --rm -v $(pwd):/Scratch ${DOCKER_IMAGE_NAME}
 
-This runs the same image (multigrid:fresh) from before, while mapping current
-directory to /Scratch inside the spun up docker container. The spun up
-container starts you off in the bash shell. While inside the docker container,
-just run:
+#### Run Everything
+Within the Docker container, to run everything, computational scripts for
+experiments and visualization scripts, run
 
-bash run_experiments.sh
+    ./run.sh
 
-This will build all the C/C++ code and then run the different scripts
-(table*.sh) that creates the tables within corresponding table*.csv files. The
-run_experiments.sh script also runs the check.sh that checks the created
-table*.csv files have error values that match the expected values.
+Please be aware of computational efforts for the scripts, see...
+
+See sections below provide for details about the individual steps.
+
+### Building Code
+Within the Docker container, run
+
+    ./build.sh
+
+After building, the resulting artifacts are binaries:
+    example1
+    example1_BDADI
+    example2
+    example2_BFSMGM
+    example3
+
+#### Running Computational Scripts
+Within the Docker container, run
+
+    ./computation.sh
+
+Output will be tables:
+    table1.csv
+    table2.csv
+    table3.csv
+    table4.csv
+
+Expected tables are in directory `expected_tables/`.
+
+## Reproduction Notes
+We kept track of our progress and issues inside `notes.txt`. We also have an
+jupyter notebook showing this progress over time `ReproducibilityPlot.ipynb`.
+
+## Acknowledgements
+We want acknowledge the authors for their fine work on this experiment. We
+succeeded with this project where many others had failed. The authors should be
+commended on putting together high quality work.
