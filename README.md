@@ -30,7 +30,7 @@ experiments and visualization scripts, run
 
     ./run.sh
 
-Please be aware of computational efforts for the scripts, see...
+Please be aware of computational efforts for the scripts. More details can be found [here](COMPUTATIONAL_EFFORTS.md).
 
 See sections below provide for details about the individual steps.
 
