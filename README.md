@@ -25,8 +25,7 @@ To start a container for the Docker image:
     docker run -it --rm -v $(pwd):/Scratch ${DOCKER_IMAGE_NAME}
 
 #### Run Everything
-Within the Docker container, to run everything, computational scripts for
-experiments and visualization scripts, run
+Within the Docker container, to run everything, building the code and running computational scripts for experiments, run
 
     ./run.sh
 
@@ -40,6 +39,7 @@ Within the Docker container, run
     ./build.sh
 
 After building, the resulting artifacts are binaries:
+
     example1
     example1_BDADI
     example2
@@ -52,6 +52,7 @@ Within the Docker container, run
     ./computation.sh
 
 Output will be tables:
+
     table1.csv
     table2.csv
     table3.csv
