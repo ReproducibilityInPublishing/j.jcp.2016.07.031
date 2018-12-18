@@ -59,6 +59,10 @@ Output will be tables:
 
 Expected tables are in directory `expected_tables/`.
 
+The script also runs `check.sh`, which checks the outputted tables against the
+expected ones under `expected_tables/`, checking the final column, the error
+values.
+
 ## Reproduction Notes
 We kept track of our progress and issues inside `notes.txt`. We also have an
 jupyter notebook showing this progress over time `ReproducibilityPlot.ipynb`.
