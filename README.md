@@ -2,10 +2,11 @@
 
 "A fast accurate approximation method with multigrid solver for two-dimensional
 fractional sub-diffusion equation" implements an approximate solution method
-for the fractional sub-diffusion equation. At each solution step, a large
-dimensional array has to be inverted to get the next step. For each inversion,
-a multigrid method is used to reduce the dimensionality of the matrix in
-question. Then an approximate inversion equation is applied when the
+for the fractional sub-diffusion equation, as described in their
+[paper](https://doi.org/10.1016/j.jcp.2016.07.031).  At each solution step, a
+large dimensional array has to be inverted to get the next step. For each
+inversion, a multigrid method is used to reduce the dimensionality of the
+matrix in question. Then an approximate inversion equation is applied when the
 dimensionality becomes small enough. After inversion, the solution is
 interpolated back to the full dimensionality. 
 
