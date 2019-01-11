@@ -2,8 +2,9 @@
 
 Figures [0]
 Tables [216] 1(12 experiments * 3 values + 12 experiments * 2 values) 2(6 experiments * 3 values + 6 experiments * 2 values) 3(30 experiments * 3 values) 4(12 experiments * 3 values)
-Numbers [0]
 Total [216]
+
+Max score [432]
 
 --- Work Log ---
 
@@ -17,15 +18,11 @@ Reading paper and background to understand what the paper is trying to do.
 
 1:00:00 By changing hard coded values, we can produce values from the AIMGM E_NM column of Table 3 and 4 within 5% of the reported error value on average. iter column is not replicated at all and CPU column is an order of magnitude larger
 
-Table 1
-12*(0.0+0.0+0.0)+12*(0.0+0.0+0.0)
-Table 2
-6*(0.0+0.0+0.0)+6*(0.0+0.0+0.0)
-Table 3
-15*(0.0+0.0+0.95)+15*(0.0+0.0+0.0)
-Table 4
-6*(0.0+0.0+0.95)+6*(0.0+0.0+0.0)
-[19.95(9.2%)]@1:00:00
+T1 ((12*0)+(12*0)+(12*0))+((12*0)+(12*0))
+T2 ((6*0)+(6*0)+(6*0))+((6*0)+(6*0))
+T3 ((15*0)+(15*0)+(13*2+2*1))+((15*0)+(15*0)+(15*0))
+T4 ((6*0)+(6*0)+(5*2+1*1))+((6*0)+(6*0)+(6*0))
+[39(9.0%)]@1:00:00
 
 5:16:00 Attempt a couple fixes which I thought might fix the simulation. These fixes failed.
 
@@ -41,15 +38,11 @@ Table 4
 
 11:40:26: Implemented example 1 as in the paper. I now get close to the values in the table along with cpu times an order of magnitude higher than the paper just like example 2
 
-Table 1
-12*(0.0+0.0+0.95)+12*(0.0+0.0)
-Table 2
-6*(0.0+0.0+0.95)+6*(0.0+0.0)
-Table 3
-15*(0.0+0.0+0.95)+15*(0.0+0.0+0.0)
-Table 4
-6*(0.0+0.0+0.95)+6*(0.0+0.0+0.0)
-[37.05(17.2%)]@13:55:26
+T1 ((12*0)+(12*0)+(6*2+6*1))+((12*0)+(12*0))
+T2 ((6*0)+(6*0)+(6*2))+((6*0)+(6*0))
+T3 ((15*0)+(15*0)+(13*2+2*1))+((15*0)+(15*0)+(15*0))
+T4 ((6*0)+(6*0)+(5*2+1*1))+((6*0)+(6*0)+(6*0))
+[69(16.0%)]@13:55:26
 
 +1.5 hrs (didn't capture the time)
 
@@ -58,43 +51,28 @@ Table 4
 +3 hrs (didn't capture the time
 
 20:12:00 (+~7hrs 15mins): I've reimplemented AIMGM to match the algorithm in the paper. With -O3, our implementation is actually slightly faster, but that might be because of hardware platform. Error is also very close with in 1-2% for all values tested. Iter values still do not match except for the first row of tables 2 and 4, however for the purposes of this study I'll consider the CPU values fully reproduced.
-Table 1
-12*(0.0+1.0+0.98)+12*(0.0+0.0)
-Table 2
-1*(1.0+1.0+0.98)
-5*(0.0+1.0+0.98)+6*(0.0+0.0)
-Table 3
-15*(0.0+1.0+0.98)+15*(0.0+0.0+0.0)
-Table 4
-1*(1.0+1.0+0.98)
-5*(0.0+1.0+0.98)+6*(0.0+0.0+0.0)
-[79.22(36.7%)]@27:27:00
+
+T1 ((12*0)+(12*2)+(6*2+6*1))+((12*0)+(12*0))
+T2 ((1*2+5*0)+(6*2)+(6*2))+((6*0)+(6*0))
+T3 ((15*0)+(15*2)+(13*2+2*1))+((15*0)+(15*0)+(15*0))
+T4 ((1*2+5*0)+(6*2)+(5*2+1*1))+((6*0)+(6*0)+(6*0))
+[151.(35.0%)]@27:27:00
 
 25:12:00 (+~7hrs 15mins): I've finished implementing the BFSMGM method. Still using the same Multigrid background so results are slightly different from reported values.
-Table 1
-12*(0.0+1.0+0.98)+12*(0.0+0.0)
-Table 2
-1*(1.0+1.0+0.98)
-5*(0.0+1.0+0.98)+6*(0.0+0.0)
-Table 3
-15*(0.0+1.0+0.98)+15*(0.0+1.0+0.98)
-Table 4
-1*(1.0+1.0+0.98)+1*(1.0+1.0+0.98)
-5*(0.0+1.0+0.98)+5*(0.0+1.0+0.98)
-[121.8(56.4%)]@32:27:00
+
+T1 ((12*0)+(12*2)+(6*2+6*1))+((12*0)+(12*0))
+T2 ((1*2+5*0)+(6*2)+(6*2))+((6*0)+(6*0))
+T3 ((15*0)+(15*2)+(13*2+2*1))+((15*0)+(15*2)+(11*2+4*1))
+T4 ((1*2+5*0)+(6*2)+(5*2+1*1))+((1*2+5*0)+(6*2)+(5*2+1*1))
+[232(53.7%)]@32:27:00
 
 30:50:00: (+~15 hrs) [total ~46 hrs] I've implemented the BD-ADI algorithm by following the cited paper. I get exactly the same error levels they report, but different performance. This is likely down to choices in implementation.
-Table 1
-12*(0.0+1.0+0.98)+12*(1.0+1.0)
-Table 2
-1*(1.0+1.0+0.98)
-5*(0.0+1.0+0.98)+6*(1.0+1.0)
-Table 3
-15*(0.0+1.0+0.98)+15*(0.0+1.0+0.98)
-Table 4
-1*(1.0+1.0+0.98)+1*(1.0+1.0+0.98)
-5*(0.0+1.0+0.98)+5*(0.0+1.0+0.98)
-[157.8(73%)]@46:00:00
+
+T1 ((12*0)+(12*2)+(6*2+6*1))+((12*2)+(12*2))
+T2 ((1*2+5*0)+(6*2)+(6*2))+((6*2)+(6*2))
+T3 ((15*0)+(15*2)+(13*2+2*1))+((15*0)+(15*2)+(11*2+4*1))
+T4 ((1*2+5*0)+(6*2)+(5*2+1*1))+((1*2+5*0)+(6*2)+(5*2+1*1))
+[304(70.4%)]@46:00:00
 
 31:50:00: Fixed memory errors reported by valgrind in example1_BDADI
 
