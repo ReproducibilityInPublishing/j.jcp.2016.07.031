@@ -2,4 +2,4 @@
 
 ./build.sh
 
-./computation_short.sh
+./computation.sh
