@@ -1,5 +1,10 @@
 # A fast accurate approximation method with multigrid solver for two-dimensional fractional sub-diffusion equation
 
+This is a Reproduction Package as described in the manuscript "Three Empirical
+Principles for Computational Reproducibility and their Implementation:
+*The Reproduction Package*” by M. S. Krafczyk, A. Shi, A. Bhaskar,
+D. Marinov, & V. Stodden
+
 "A fast accurate approximation method with multigrid solver for two-dimensional
 fractional sub-diffusion equation" implements an approximate solution method
 for the fractional sub-diffusion equation, as described in their
