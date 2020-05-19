@@ -29,7 +29,7 @@ def calc_error(lexp, lactual):
 
 for i in range(1,5):
 	print ("EXAMPLE"+str(i))
-	path_expected = 'expected_tables/table%d.csv' % (i)
+	path_expected = 'expected_output/table%d.csv' % (i)
 	lexp = read_tables(path_expected)
 	path_actual = 'table%d.csv' % (i)
 	lactual = read_tables(path_actual)

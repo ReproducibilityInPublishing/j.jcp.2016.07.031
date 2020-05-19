@@ -64,10 +64,10 @@ Output will be tables:
     table3.csv
     table4.csv
 
-Expected tables are in directory `expected_tables/`.
+Expected tables are in directory `expected_output/`.
 
 The script also runs `check.sh`, which checks the outputted tables against the
-expected ones under `expected_tables/`, checking the final column, the error
+expected ones under `expected_output/`, checking the final column, the error
 values.
 
 ## Reproduction Notes
